@@ -104,6 +104,22 @@ model Task {
   priority    TaskPriority
   type        TaskType
 
+  budget                Decimal
+  commissionPercent     Decimal
+  timeToCompleteMin     Int
+  deadline              DateTime?
+  maxSubmissionDelayMin Int?
+  status         TaskStatus @default(NEW)
+  startedAt      DateTime?
+  submittedAt    DateTime?
+  completedAt    DateTime?
+
+  createdById String
+  createdBy   User   @relation("TaskCreator", fields: [createdById], references: [id])
+
+  assignedUserId String?
+  assignedTo  User?  @relation("TaskAssignee", fields: [assignedUserId], references: [id])
+
   categoryId String
   category   TaskCategory @relation(fields: [categoryId], references: [id])
 
@@ -112,6 +128,34 @@ model Task {
 
   notifications Notification[]
   ledgerEntries LedgerEntry[]
+  submissions   TaskSubmission[]
+}
+
+model TaskSubmission {
+  id String @id @default(uuid())
+
+  taskId   String
+  proofUrl String
+  comment  String?
+
+  isLate        Boolean
+  adminFeedback String?
+  submittedById String // Worker who submitted this task
+  reviewedById  String? // Admin who reviewed this submission
+  isLatest      Boolean @default(true) // Track the latest submission
+
+  task       Task  @relation(fields: [taskId], references: [id])
+  submittedBy User @relation("TaskSubmitter", fields: [submittedById], references: [id])
+  reviewedBy User? @relation("Reviewer", fields: [reviewedById], references: [id])
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  reviewedAt DateTime?
+
+  @@index([taskId, isLatest])
+  @@index([taskId])
+  @@index([submittedById])
+  @@index([submittedById, taskId])
 }
 
 // =====================================
@@ -139,12 +183,18 @@ model User {
   avatarUrl     String?
   role          UserRole
   isActive      Boolean  @default(true)
-  emailVerified Boolean  @default(false)
   lastLoginAt   DateTime?
+
+  earning Decimal @default(0)
+  balance Decimal @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  tasksCreated        Task[]           @relation("TaskCreator")
+  tasksAssigned       Task[]           @relation("TaskAssignee")
+  taskSubmissions     TaskSubmission[] @relation("TaskSubmitter")
+  reviewedSubmissions TaskSubmission[] @relation("Reviewer")
   paymentMethods PaymentMethod[]
   refreshTokens RefreshToken[]
   otps          Otp[]
