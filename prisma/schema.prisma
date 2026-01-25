@@ -102,17 +102,23 @@ model TaskCategory {
 // User
 // =====================================
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
-  avatarUrl String?
-  role      UserRole
-  isActive  Boolean  @default(true)
+  id            String   @id @default(uuid())
+  email         String   @unique
+  name          String?
+  avatarUrl     String?
+  role          UserRole
+  isActive      Boolean  @default(true)
+  emailVerified Boolean  @default(false)
+  lastLoginAt   DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  paymentMethods      PaymentMethod[]
+  paymentMethods PaymentMethod[]
+  refreshTokens RefreshToken[]
+  otps          Otp[]
+
+  @@index([email])
 }
 
 // =====================================
@@ -122,8 +128,8 @@ model PaymentMethod {
   id          String            @id @default(uuid())
   userId      String
   type        PaymentMethodType
-  provider    String? // e.g., "Chase Bank", "PayPal"
-  accountInfo String // Encrypted/hashed account details
+  provider    String?
+  accountInfo String
   isDefault   Boolean           @default(false)
   isActive    Boolean           @default(true)
 
@@ -133,4 +139,46 @@ model PaymentMethod {
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId])
+}
+
+// =====================================
+// Authentication
+// =====================================
+model Otp {
+  id        String   @id @default(uuid())
+  email     String
+  userId    String? // Optional: null for registration, set for login
+  otpHash   String // Hashed OTP for security
+  attempts  Int      @default(0) // Track verification attempts
+  isUsed    Boolean  @default(false)
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email, expiresAt])
+  @@index([email, isUsed])
+  @@index([userId])
+}
+
+model RefreshToken {
+  id          String   @id @default(uuid())
+  userId      String
+  tokenHash   String // Hashed refresh token
+  deviceInfo  String? // Optional: browser/device fingerprint
+  ipAddress   String? // Optional: for security tracking
+  isRevoked   Boolean  @default(false)
+  expiresAt   DateTime
+  lastUsedAt  DateTime @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRevoked])
+  @@index([tokenHash])
+  @@index([expiresAt])
 }
