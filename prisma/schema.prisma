@@ -14,12 +14,34 @@ datasource db {
 }
 
 // =====================================
+// Enums
+// =====================================
+enum TaskType {
+  STANDARD
+  HIGH_VALUE
+  PREMIUM
+}
+
+// =====================================
 // System Setting
 // =====================================
 model SystemSetting {
   key         String  @id
   value       String
   description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// =====================================
+// Gamification
+// =====================================
+model LevelConfig {
+  level             Int        @id
+  xpRequired        Int
+  earningMultiplier Decimal
+  unlockedTaskTypes TaskType[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
