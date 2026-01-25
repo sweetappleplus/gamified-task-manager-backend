@@ -68,6 +68,13 @@ enum NotificationType {
   TASK_SUBMITTED
 }
 
+enum SprintStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
 // =====================================
 // System Setting
 // =====================================
@@ -109,16 +116,16 @@ model Task {
   timeToCompleteMin     Int
   deadline              DateTime?
   maxSubmissionDelayMin Int?
-  status         TaskStatus @default(NEW)
-  startedAt      DateTime?
-  submittedAt    DateTime?
-  completedAt    DateTime?
+  status                TaskStatus @default(NEW)
+  startedAt             DateTime?
+  submittedAt           DateTime?
+  completedAt           DateTime?
 
   createdById String
   createdBy   User   @relation("TaskCreator", fields: [createdById], references: [id])
 
   assignedUserId String?
-  assignedTo  User?  @relation("TaskAssignee", fields: [assignedUserId], references: [id])
+  assignedTo     User?   @relation("TaskAssignee", fields: [assignedUserId], references: [id])
 
   categoryId String
   category   TaskCategory @relation(fields: [categoryId], references: [id])
@@ -129,6 +136,7 @@ model Task {
   notifications Notification[]
   ledgerEntries LedgerEntry[]
   submissions   TaskSubmission[]
+  sprintTasks   SprintTask[]
 }
 
 model TaskSubmission {
@@ -144,9 +152,9 @@ model TaskSubmission {
   reviewedById  String? // Admin who reviewed this submission
   isLatest      Boolean @default(true) // Track the latest submission
 
-  task       Task  @relation(fields: [taskId], references: [id])
-  submittedBy User @relation("TaskSubmitter", fields: [submittedById], references: [id])
-  reviewedBy User? @relation("Reviewer", fields: [reviewedById], references: [id])
+  task        Task  @relation(fields: [taskId], references: [id])
+  submittedBy User  @relation("TaskSubmitter", fields: [submittedById], references: [id])
+  reviewedBy  User? @relation("Reviewer", fields: [reviewedById], references: [id])
 
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
@@ -177,13 +185,13 @@ model TaskCategory {
 // User
 // =====================================
 model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  name          String?
-  avatarUrl     String?
-  role          UserRole
-  isActive      Boolean  @default(true)
-  lastLoginAt   DateTime?
+  id          String    @id @default(uuid())
+  email       String    @unique
+  name        String?
+  avatarUrl   String?
+  role        UserRole
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
 
   earning Decimal @default(0)
   balance Decimal @default(0)
@@ -195,11 +203,13 @@ model User {
   tasksAssigned       Task[]           @relation("TaskAssignee")
   taskSubmissions     TaskSubmission[] @relation("TaskSubmitter")
   reviewedSubmissions TaskSubmission[] @relation("Reviewer")
-  paymentMethods PaymentMethod[]
-  refreshTokens RefreshToken[]
-  otps          Otp[]
-  notifications Notification[]
-  ledgerEntries LedgerEntry[]
+  paymentMethods      PaymentMethod[]
+  refreshTokens       RefreshToken[]
+  otps                Otp[]
+  notifications       Notification[]
+  ledgerEntries       LedgerEntry[]
+  sprintsCreated      DailySprint[]    @relation("SprintCreator")
+  sprintProgress      SprintProgress[]
 
   @@index([email])
 }
@@ -247,14 +257,14 @@ model Otp {
 }
 
 model RefreshToken {
-  id          String   @id @default(uuid())
-  userId      String
-  tokenHash   String // Hashed refresh token
-  deviceInfo  String? // Optional: browser/device fingerprint
-  ipAddress   String? // Optional: for security tracking
-  isRevoked   Boolean  @default(false)
-  expiresAt   DateTime
-  lastUsedAt  DateTime @default(now())
+  id         String   @id @default(uuid())
+  userId     String
+  tokenHash  String // Hashed refresh token
+  deviceInfo String? // Optional: browser/device fingerprint
+  ipAddress  String? // Optional: for security tracking
+  isRevoked  Boolean  @default(false)
+  expiresAt  DateTime
+  lastUsedAt DateTime @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -274,16 +284,16 @@ model Notification {
   userId String
   type   NotificationType
 
-  title               String
-  message             String
-  isRead              Boolean @default(false)
-  relatedTaskId       String?
+  title         String
+  message       String
+  isRead        Boolean @default(false)
+  relatedTaskId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   relatedTask Task? @relation(fields: [relatedTaskId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  user        User  @relation(fields: [userId], references: [id])
 
   @@index([userId, isRead])
   @@index([userId, createdAt])
@@ -316,13 +326,78 @@ model LedgerEntry {
 // Bonus Configuration
 // =====================================
 model BonusConfig {
-  id                   String   @id @default(uuid())
-  TaskType             TaskType @unique
-  name                 String   @unique
-  description          String?
-  bonusPercent         Decimal // Percentage of base reward to add as bonus
-  isActive             Boolean @default(true)
+  id           String   @id @default(uuid())
+  TaskType     TaskType @unique
+  name         String   @unique
+  description  String?
+  bonusPercent Decimal // Percentage of base reward to add as bonus
+  isActive     Boolean  @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// =====================================
+// Daily Sprints
+// =====================================
+model DailySprint {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  startDate   DateTime // Sprint start date/time (24-hour window begins)
+  endDate     DateTime // Sprint end date/time (24 hours after start)
+  status      SprintStatus @default(DRAFT)
+  isActive    Boolean      @default(true)
+
+  createdById String
+  createdBy   User   @relation("SprintCreator", fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tasks    SprintTask[]
+  progress SprintProgress[]
+
+  @@index([startDate, endDate])
+  @@index([status])
+  @@index([createdById])
+  @@index([isActive, status])
+}
+
+model SprintTask {
+  id       String @id @default(uuid())
+  sprintId String
+  taskId   String
+  order    Int // Order of task in the sprint (1, 2, 3, ...)
+
+  sprint DailySprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  task   Task        @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sprintId, taskId])
+  @@index([sprintId, order])
+  @@index([taskId])
+}
+
+model SprintProgress {
+  id             String    @id @default(uuid())
+  sprintId       String
+  userId         String
+  tasksCompleted Int       @default(0) // Number of tasks completed in this sprint
+  totalTasks     Int // Total tasks in the sprint (denormalized for quick access)
+  startedAt      DateTime? // When worker started working on the sprint
+  completedAt    DateTime? // When worker completed all tasks in the sprint
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sprint DailySprint @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sprintId, userId])
+  @@index([userId, sprintId])
+  @@index([sprintId])
+  @@index([userId])
 }
