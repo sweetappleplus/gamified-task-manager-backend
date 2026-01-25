@@ -16,6 +16,11 @@ datasource db {
 // =====================================
 // Enums
 // =====================================
+enum UserRole {
+  WORKER
+  SUPER_ADMIN
+}
+
 enum TaskPriority {
   LOW
   MEDIUM
@@ -26,6 +31,13 @@ enum TaskType {
   STANDARD
   HIGH_VALUE
   PREMIUM
+}
+
+enum PaymentMethodType {
+  BANK_ACCOUNT
+  PAYPAL
+  CRYPTO
+  CARD
 }
 
 // =====================================
@@ -84,4 +96,41 @@ model TaskCategory {
   updatedAt DateTime @updatedAt
 
   tasks Task[]
+}
+
+// =====================================
+// User
+// =====================================
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+  role      UserRole
+  isActive  Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  paymentMethods      PaymentMethod[]
+}
+
+// =====================================
+// Payment Methods
+// =====================================
+model PaymentMethod {
+  id          String            @id @default(uuid())
+  userId      String
+  type        PaymentMethodType
+  provider    String? // e.g., "Chase Bank", "PayPal"
+  accountInfo String // Encrypted/hashed account details
+  isDefault   Boolean           @default(false)
+  isActive    Boolean           @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
