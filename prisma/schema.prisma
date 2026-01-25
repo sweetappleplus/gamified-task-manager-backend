@@ -111,6 +111,7 @@ model Task {
   updatedAt DateTime @updatedAt
 
   notifications Notification[]
+  ledgerEntries LedgerEntry[]
 }
 
 // =====================================
@@ -148,6 +149,7 @@ model User {
   refreshTokens RefreshToken[]
   otps          Otp[]
   notifications Notification[]
+  ledgerEntries LedgerEntry[]
 
   @@index([email])
 }
@@ -230,10 +232,32 @@ model Notification {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  task Task? @relation(fields: [relatedTaskId], references: [id])
+  relatedTask Task? @relation(fields: [relatedTaskId], references: [id])
   user User @relation(fields: [userId], references: [id])
 
   @@index([userId, isRead])
   @@index([userId, createdAt])
   @@index([type])
+}
+
+// =====================================
+// Finance & Ledger
+// =====================================
+model LedgerEntry {
+  id     String     @id @default(uuid())
+  userId String
+  type   LedgerType
+
+  amount        Decimal
+  description   String? // Optional description/notes for the transaction
+  relatedTaskId String?
+
+  createdAt DateTime @default(now())
+
+  user        User  @relation(fields: [userId], references: [id])
+  relatedTask Task? @relation(fields: [relatedTaskId], references: [id])
+
+  @@index([userId, type])
+  @@index([userId, createdAt])
+  @@index([relatedTaskId])
 }
