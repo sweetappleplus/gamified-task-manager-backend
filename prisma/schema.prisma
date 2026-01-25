@@ -14,7 +14,7 @@ datasource db {
 }
 
 // =====================================
-// System / Config
+// System Setting
 // =====================================
 model SystemSetting {
   key         String  @id
