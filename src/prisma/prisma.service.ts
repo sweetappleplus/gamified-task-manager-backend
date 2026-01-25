@@ -4,7 +4,7 @@ import { PrismaClient } from '../generated/prisma/client.js';
 import { DATABASE_URL } from '../consts/index.js';
 
 if (!DATABASE_URL) {
-  throw new Error("DATABASE_URL is not set in the environment variables");
+  throw new Error('DATABASE_URL is not set in the environment variables');
 }
 
 @Injectable()

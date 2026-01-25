@@ -28,6 +28,7 @@ export class UserController {
         take: take ? parseInt(take) : undefined,
       });
     } catch (error) {
+      console.error(error);
       throw new HttpException(
         'Failed to fetch users',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -61,6 +62,7 @@ export class UserController {
     try {
       return await this.userService.createUser(data);
     } catch (error) {
+      console.error(error);
       throw new HttpException(
         'Failed to create user',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -79,6 +81,7 @@ export class UserController {
         data,
       });
     } catch (error) {
+      console.error(error);
       throw new HttpException(
         'Failed to update user',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -93,6 +96,7 @@ export class UserController {
         id: parseInt(id),
       });
     } catch (error) {
+      console.error(error);
       throw new HttpException(
         'Failed to delete user',
         HttpStatus.INTERNAL_SERVER_ERROR,
