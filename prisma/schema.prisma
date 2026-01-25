@@ -13,8 +13,14 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-	id Int @id @default(autoincrement())
-	email String @unique
-	name String?
+// =====================================
+// System / Config
+// =====================================
+model SystemSetting {
+  key         String  @id
+  value       String
+  description String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
