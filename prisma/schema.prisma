@@ -40,6 +40,34 @@ enum PaymentMethodType {
   CARD
 }
 
+enum TaskStatus {
+  NEW
+  PENDING
+  IN_ACTION
+  IN_REVIEW
+  COMPLETED
+  LATE
+  PAID
+  FAILED
+  CANCELLED
+}
+
+enum LedgerType {
+  TASK_REWARD
+  BONUS
+  ADJUSTMENT
+  WITHDRAWAL
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  TASK_APPROVED
+  TASK_REJECTED
+  PAYMENT_RECORDED
+  WORKER_JOINED
+  TASK_SUBMITTED
+}
+
 // =====================================
 // System Setting
 // =====================================
@@ -81,6 +109,8 @@ model Task {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  notifications Notification[]
 }
 
 // =====================================
@@ -117,6 +147,7 @@ model User {
   paymentMethods PaymentMethod[]
   refreshTokens RefreshToken[]
   otps          Otp[]
+  notifications Notification[]
 
   @@index([email])
 }
@@ -181,4 +212,28 @@ model RefreshToken {
   @@index([userId, isRevoked])
   @@index([tokenHash])
   @@index([expiresAt])
+}
+
+// =====================================
+// Notifications
+// =====================================
+model Notification {
+  id     String           @id @default(uuid())
+  userId String
+  type   NotificationType
+
+  title               String
+  message             String
+  isRead              Boolean @default(false)
+  relatedTaskId       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  task Task? @relation(fields: [relatedTaskId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
+  @@index([type])
 }
