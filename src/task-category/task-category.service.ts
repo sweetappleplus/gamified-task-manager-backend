@@ -9,8 +9,9 @@ import {
   UpdateTaskCategoryDto,
   TaskCategoryResponseDto,
 } from './dto/index.js';
-import { API_STATUSES } from '../consts/index.js';
+import { API_STATUSES, LOG_LEVELS } from '../consts/index.js';
 import { ApiResponse } from '../types/index.js';
+import { log } from '../utils/index.js';
 
 @Injectable()
 export class TaskCategoryService {
@@ -35,6 +36,11 @@ export class TaskCategoryService {
         name: createDto.name,
         description: createDto.description,
       },
+    });
+
+    log({
+      message: `New task category created: ${category.name}`,
+      level: LOG_LEVELS.INFO,
     });
 
     return {
@@ -106,6 +112,11 @@ export class TaskCategoryService {
       data: updateDto,
     });
 
+    log({
+      message: `Task category updated: ${updated.name}`,
+      level: LOG_LEVELS.INFO,
+    });
+
     return {
       status: API_STATUSES.SUCCESS,
       message: 'Task category updated successfully',
@@ -126,6 +137,11 @@ export class TaskCategoryService {
 
     await this.prisma.taskCategory.delete({
       where: { id },
+    });
+
+    log({
+      message: `Task category deleted: ${existing.name}`,
+      level: LOG_LEVELS.INFO,
     });
 
     return {
