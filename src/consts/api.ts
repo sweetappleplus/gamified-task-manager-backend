@@ -6,3 +6,7 @@ export const API_STATUSES = {
 } as const;
 
 export const IS_PUBLIC_KEY = 'isPublic';
+
+export const JWT_SECRET = process.env.JWT_SECRET;
+
+export const JWT_EXPIRATION_TIME_MINUTES = process.env.JWT_EXPIRATION_TIME_MINUTES;
