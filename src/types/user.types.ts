@@ -3,17 +3,17 @@ export const UserRole = {
   SUPER_ADMIN: 'SUPER_ADMIN',
 };
 
-export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+export type TUserRole = (typeof UserRole)[keyof typeof UserRole];
 
 export interface CurrentUserData {
   userId: string;
   email: string;
-  role: UserRole;
+  role: TUserRole;
 }
 
 export interface User {
   id: string;
   email: string;
   name?: string;
-  role: UserRole;
+  role: TUserRole;
 }
