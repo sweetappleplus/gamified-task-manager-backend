@@ -292,7 +292,7 @@ export class OtpService {
    * Clean up expired OTPs (can be called by a cron job)
    */
   async cleanupExpiredOtps(): Promise<void> {
-    await (this.prisma as any).otp.deleteMany({
+    await this.prisma.otp.deleteMany({
       where: {
         OR: [{ expiresAt: { lt: new Date() } }, { isUsed: true }],
       },
