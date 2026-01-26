@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app/app.module.js';
 import { LOG_LEVELS, PORT } from './consts/index.js';
 import { log } from './utils/index.js';
@@ -10,7 +10,7 @@ if (!PORT) {
     message: 'PORT is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new Error('PORT is not set in the environment variables');
+  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
 }
 
 async function bootstrap() {

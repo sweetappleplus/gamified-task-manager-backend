@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { HttpException, HttpStatus, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './auth.service.js';
@@ -19,7 +19,7 @@ if (!JWT_SECRET) {
     message: 'JWT_SECRET is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new Error('JWT_SECRET is not set in the environment variables');
+  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
 }
 
 if (!JWT_EXPIRATION_TIME_MINUTES) {
@@ -28,9 +28,7 @@ if (!JWT_EXPIRATION_TIME_MINUTES) {
       'JWT_EXPIRATION_TIME_MINUTES is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new Error(
-    'JWT_EXPIRATION_TIME_MINUTES is not set in the environment variables',
-  );
+  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
 }
 
 @Module({

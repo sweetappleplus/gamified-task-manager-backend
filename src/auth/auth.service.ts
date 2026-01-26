@@ -49,7 +49,7 @@ export class AuthService {
 
     if (!verification.isValid) {
       log({
-        message: `Invalid or expired OTP for ${email}`,
+        message: `${email} user was trying to login with an invalid or expired OTP`,
         level: LOG_LEVELS.WARNING,
       });
       throw new UnauthorizedException('Invalid or expired OTP');
@@ -76,7 +76,7 @@ export class AuthService {
     // Check if user is active
     if (!user.isActive) {
       log({
-        message: `The deactivated account tried to login: ${email}`,
+        message: `${email} user was trying to login with a deactivated account`,
         level: LOG_LEVELS.WARNING,
       });
       throw new UnauthorizedException('Account is deactivated');

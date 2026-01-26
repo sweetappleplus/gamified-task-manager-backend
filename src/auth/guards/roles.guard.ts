@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserRole, TUserRole } from '../../types/index.js';
@@ -29,10 +30,10 @@ export class RolesGuard implements CanActivate {
     if (!user) {
       log({
         message:
-          'Somebody tried to access a restricted endpoint without being authenticated',
-        level: LOG_LEVELS.DEBUG,
+          'Somebody was trying to access a restricted endpoint without being authenticated',
+        level: LOG_LEVELS.WARNING,
       });
-      throw new ForbiddenException('Unauthorized');
+      throw new UnauthorizedException('Unauthorized access');
     }
 
     // SUPER_ADMIN can access all roles
@@ -46,10 +47,10 @@ export class RolesGuard implements CanActivate {
     if (!hasRole) {
       log({
         message:
-          'Somebody tried to access a restricted endpoint without having the required role',
-        level: LOG_LEVELS.DEBUG,
+          'Somebody was trying to access a restricted endpoint without having the required role',
+        level: LOG_LEVELS.WARNING,
       });
-      throw new ForbiddenException('Forbidden');
+      throw new ForbiddenException('Forbidden access');
     }
 
     return true;

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -11,7 +11,7 @@ if (!JWT_SECRET) {
     message: 'JWT_SECRET is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new Error('JWT_SECRET is not set in the environment variables');
+  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
 }
 
 @Injectable()
@@ -31,8 +31,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     if (!user || !user.isActive) {
       log({
-        message: `User not found or inactive: ${payload.id}`,
-        level: LOG_LEVELS.DEBUG,
+        message: `${payload.id} user was not found or inactive`,
+        level: LOG_LEVELS.WARNING,
       });
       throw new UnauthorizedException('User not found or inactive');
     }

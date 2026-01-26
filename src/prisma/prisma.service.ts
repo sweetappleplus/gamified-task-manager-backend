@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client.js';
 import { DATABASE_URL, LOG_LEVELS } from '../consts/index.js';
@@ -9,7 +9,7 @@ if (!DATABASE_URL) {
     message: 'DATABASE_URL is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new Error('DATABASE_URL is not set in the environment variables');
+  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
 }
 
 @Injectable()
