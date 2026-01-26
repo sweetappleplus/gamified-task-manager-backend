@@ -189,7 +189,7 @@ model User {
   email       String    @unique
   name        String?
   avatarUrl   String?
-  role        UserRole
+  role        UserRole  @default(WORKER)
   isActive    Boolean   @default(true)
   lastLoginAt DateTime?
 
