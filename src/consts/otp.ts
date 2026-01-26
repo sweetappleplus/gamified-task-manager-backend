@@ -1,6 +1,6 @@
 export const OTP_EXPIRATION_TIME_MINUTES = process.env.OTP_EXPIRATION_TIME_MINUTES;
 
-export const MAX_OTP_ATTEMPTS = process.env.MAX_OTP_ATTEMPTS;
+export const OTP_ATTEMPTS_MIN_DURATION_MINUTES = process.env.OTP_ATTEMPTS_MIN_DURATION_MINUTES;
 
 export const SMTP_FROM = process.env.SMTP_FROM;
 
