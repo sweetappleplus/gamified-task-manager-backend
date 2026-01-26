@@ -16,7 +16,7 @@ import {
   UpdateTaskCategoryDto,
   TaskCategoryResponseDto,
 } from './dto/index.js';
-import { Roles } from '../auth/decorators/index.js';
+import { Public, Roles } from '../auth/decorators/index.js';
 import { UserRole } from '../types/index.js';
 import { ApiResponse } from '../types/index.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
@@ -36,12 +36,14 @@ export class TaskCategoryController {
   }
 
   @Get()
+  @Public()
   @HttpCode(HttpStatus.OK)
   async findAll(): Promise<ApiResponse<TaskCategoryResponseDto[]>> {
     return this.taskCategoryService.findAll();
   }
 
   @Get(':id')
+  @Public()
   @HttpCode(HttpStatus.OK)
   async findOne(
     @Param('id') id: string,
