@@ -1,0 +1,3 @@
+import { LOG_LEVELS } from '../consts/index.js';
+
+export type LogLevel = (typeof LOG_LEVELS)[keyof typeof LOG_LEVELS];
