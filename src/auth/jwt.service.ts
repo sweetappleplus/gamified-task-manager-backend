@@ -147,12 +147,15 @@ export class AuthJwtService {
       },
     });
 
+    // Type for refresh token with user relation
+    type RefreshTokenWithUser = (typeof tokens)[number];
+
     // Try to match the provided token
-    let matchedToken: any = null;
+    let matchedToken: RefreshTokenWithUser | null = null;
     for (const token of tokens) {
       const isValid = await bcrypt.compare(refreshToken, token.tokenHash);
       if (isValid) {
-        matchedToken = token as any;
+        matchedToken = token;
         break;
       }
     }
@@ -177,8 +180,8 @@ export class AuthJwtService {
       token.userId,
       token.user.email,
       token.user.role,
-      token.deviceInfo || undefined,
-      token.ipAddress || undefined,
+      token.deviceInfo ?? undefined,
+      token.ipAddress ?? undefined,
     );
 
     return {

@@ -6,9 +6,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserRole, TUserRole } from '../../types/index.js';
+import { UserRole, TUserRole, CurrentUserData } from '../../types/index.js';
 import { LOG_LEVELS, ROLES_KEY } from '../../consts/index.js';
 import { log } from '../../utils/index.js';
+
+interface RequestWithUser extends Request {
+  user?: CurrentUserData;
+}
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -24,7 +28,7 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<RequestWithUser>();
     const user = request.user;
 
     if (!user) {
@@ -42,7 +46,7 @@ export class RolesGuard implements CanActivate {
     }
 
     // Check if user has required role
-    const hasRole = requiredRoles.includes(user.role as TUserRole);
+    const hasRole = requiredRoles.includes(user.role);
 
     if (!hasRole) {
       log({
