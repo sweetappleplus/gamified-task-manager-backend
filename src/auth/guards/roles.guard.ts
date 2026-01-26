@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from '../../types/index.js';
+import { UserRole, TUserRole } from '../../types/index.js';
 import { LOG_LEVELS, ROLES_KEY } from '../../consts/index.js';
 import { log } from '../../utils/index.js';
 
@@ -9,7 +9,7 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(ROLES_KEY, [
+    const requiredRoles = this.reflector.getAllAndOverride<TUserRole[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
@@ -35,7 +35,7 @@ export class RolesGuard implements CanActivate {
     }
 
     // Check if user has required role
-    const hasRole = requiredRoles.includes(user.role as UserRole);
+    const hasRole = requiredRoles.includes(user.role as TUserRole);
 
     if (!hasRole) {
       log({
