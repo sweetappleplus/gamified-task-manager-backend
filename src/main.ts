@@ -6,7 +6,7 @@ import { LOG_LEVELS, PORT } from './consts/index.js';
 import { log } from './utils/index.js';
 
 if (!PORT) {
-  log('PORT is not set in the environment variables', LOG_LEVELS.ERROR);
+  log('PORT is not set in the environment variables', LOG_LEVELS.CRITICAL);
   throw new Error('PORT is not set in the environment variables');
 }
 
