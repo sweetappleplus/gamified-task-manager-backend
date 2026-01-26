@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsBoolean, MaxLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateTaskCategoryDto {
   @IsOptional()
@@ -9,8 +9,4 @@ export class UpdateTaskCategoryDto {
   @IsOptional()
   @IsString()
   description?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
 }

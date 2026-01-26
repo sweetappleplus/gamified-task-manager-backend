@@ -2,7 +2,6 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import {
@@ -35,7 +34,6 @@ export class TaskCategoryService {
       data: {
         name: createDto.name,
         description: createDto.description,
-        isActive: true,
       },
     });
 
@@ -103,24 +101,6 @@ export class TaskCategoryService {
       }
     }
 
-    // Prevent deactivating category if it has active tasks
-    if (updateDto.isActive === false && existing.isActive) {
-      const activeTasksCount = await this.prisma.task.count({
-        where: {
-          categoryId: id,
-          status: {
-            notIn: ['COMPLETED', 'PAID', 'CANCELLED', 'FAILED'],
-          },
-        },
-      });
-
-      if (activeTasksCount > 0) {
-        throw new BadRequestException(
-          `Cannot deactivate category with ${activeTasksCount} active task(s). Please complete or cancel all tasks first.`,
-        );
-      }
-    }
-
     const updated = await this.prisma.taskCategory.update({
       where: { id },
       data: updateDto,
@@ -142,17 +122,6 @@ export class TaskCategoryService {
 
     if (!existing) {
       throw new NotFoundException(`Task category with id "${id}" not found`);
-    }
-
-    // Check if category has associated tasks
-    const tasksCount = await this.prisma.task.count({
-      where: { categoryId: id },
-    });
-
-    if (tasksCount > 0) {
-      throw new BadRequestException(
-        `Cannot delete category with ${tasksCount} associated task(s). Please delete or reassign all tasks first.`,
-      );
     }
 
     await this.prisma.taskCategory.delete({
