@@ -242,7 +242,6 @@ model Otp {
   email     String
   userId    String? // Optional: null for registration, set for login
   otpHash   String // Hashed OTP for security
-  attempts  Int      @default(0) // Track verification attempts
   isUsed    Boolean  @default(false)
   expiresAt DateTime
 
