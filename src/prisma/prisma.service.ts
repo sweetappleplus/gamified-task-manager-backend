@@ -10,7 +10,7 @@ if (!DATABASE_URL) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'DATABASE_URL is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }

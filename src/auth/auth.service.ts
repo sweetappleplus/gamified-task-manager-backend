@@ -52,7 +52,7 @@ export class AuthService {
         message: `${email} user was trying to login with an invalid or expired OTP`,
         level: LOG_LEVELS.WARNING,
       });
-      throw new UnauthorizedException('Invalid or expired OTP');
+      throw new UnauthorizedException('OTP code is invalid or expired');
     }
 
     // Find or create user
@@ -79,7 +79,7 @@ export class AuthService {
         message: `${email} user was trying to login with a deactivated account`,
         level: LOG_LEVELS.WARNING,
       });
-      throw new UnauthorizedException('Account is deactivated');
+      throw new UnauthorizedException('User account is deactivated');
     }
 
     // Update last login
@@ -123,7 +123,9 @@ export class AuthService {
     });
 
     if (!user || !user.isActive) {
-      throw new UnauthorizedException('User not found or inactive');
+      throw new UnauthorizedException(
+        'User account is not found or deactivated',
+      );
     }
 
     return {

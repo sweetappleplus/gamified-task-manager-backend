@@ -22,7 +22,7 @@ if (!REFRESH_TOKEN_EXPIRY_DAYS) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'REFRESH_TOKEN_EXPIRY_DAYS is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
@@ -34,7 +34,7 @@ if (!ACCESS_TOKEN_EXPIRY_MINUTES) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'ACCESS_TOKEN_EXPIRY_MINUTES is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
@@ -161,7 +161,7 @@ export class AuthJwtService {
     }
 
     if (!matchedToken) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Refresh token is invalid');
     }
 
     const token = matchedToken;

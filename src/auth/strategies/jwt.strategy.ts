@@ -17,7 +17,7 @@ if (!JWT_SECRET) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'JWT_SECRET is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
@@ -39,10 +39,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     if (!user || !user.isActive) {
       log({
-        message: `${payload.id} user was not found or inactive`,
+        message: `${payload.id} user was not found or deactivated`,
         level: LOG_LEVELS.WARNING,
       });
-      throw new UnauthorizedException('User not found or inactive');
+      throw new UnauthorizedException(
+        'User account is not found or deactivated',
+      );
     }
 
     return {

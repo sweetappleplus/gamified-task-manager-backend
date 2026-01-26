@@ -64,7 +64,7 @@ export class TaskCategoryService {
     });
 
     if (!category) {
-      throw new NotFoundException(`Task category with id "${id}" not found`);
+      throw new NotFoundException(`Task category with id "${id}" is not found`);
     }
 
     return {
@@ -85,7 +85,7 @@ export class TaskCategoryService {
     });
 
     if (!existing) {
-      throw new NotFoundException(`Task category with id "${id}" not found`);
+      throw new NotFoundException(`Task category with id "${id}" is not found`);
     }
 
     // If name is being updated, check for conflicts
@@ -121,7 +121,7 @@ export class TaskCategoryService {
     });
 
     if (!existing) {
-      throw new NotFoundException(`Task category with id "${id}" not found`);
+      throw new NotFoundException(`Task category with id "${id}" is not found`);
     }
 
     await this.prisma.taskCategory.delete({

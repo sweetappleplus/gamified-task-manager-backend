@@ -6,7 +6,7 @@ import { defineConfig } from "prisma/config";
 import { DATABASE_URL } from "./src/consts/index.js";
 
 if (!DATABASE_URL) {
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException('DATABASE_URL is not set in the environment variables', HttpStatus.INTERNAL_SERVER_ERROR);
 }
 
 export default defineConfig({

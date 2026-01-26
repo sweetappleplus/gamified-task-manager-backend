@@ -22,7 +22,7 @@ if (!OTP_EXPIRATION_TIME_MINUTES) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'OTP_EXPIRATION_TIME_MINUTES is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
@@ -34,7 +34,7 @@ if (!OTP_ATTEMPTS_MIN_DURATION_MINUTES) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'OTP_ATTEMPTS_MIN_DURATION_MINUTES is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
@@ -45,7 +45,7 @@ if (!SMTP_FROM) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'SMTP_FROM is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
@@ -56,7 +56,7 @@ if (!SMTP_HOST) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'SMTP_HOST is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
@@ -67,7 +67,7 @@ if (!SMTP_PORT) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'SMTP_PORT is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
@@ -78,7 +78,7 @@ if (!SMTP_USER) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'SMTP_USER is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
@@ -89,7 +89,7 @@ if (!SMTP_PASS) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'SMTP_PASS is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
@@ -166,7 +166,7 @@ export class OtpService {
         level: LOG_LEVELS.ERROR,
       });
       throw new HttpException(
-        'Failed to send OTP email. Please try again later.',
+        'Failed to send OTP email. Please try again later or contact support.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

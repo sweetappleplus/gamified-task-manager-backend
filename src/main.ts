@@ -11,7 +11,7 @@ if (!PORT) {
     level: LOG_LEVELS.CRITICAL,
   });
   throw new HttpException(
-    'Internal server error',
+    'PORT is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
 }
