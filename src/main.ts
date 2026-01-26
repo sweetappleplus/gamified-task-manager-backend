@@ -15,10 +15,10 @@ if (!PORT) {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   // Enable CORS
   app.enableCors();
-  
+
   // Enable validation pipes
   app.useGlobalPipes(
     new ValidationPipe({
@@ -27,7 +27,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
-  
+
   await app.listen(Number(PORT));
   log({
     message: `Application is running on: http://localhost:${PORT}`,

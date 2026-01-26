@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { UserRole, TUserRole } from '../../types/index.js';
 import { LOG_LEVELS, ROLES_KEY } from '../../consts/index.js';
@@ -9,10 +14,10 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<TUserRole[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<TUserRole[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
     if (!requiredRoles) {
       return true;
@@ -23,7 +28,8 @@ export class RolesGuard implements CanActivate {
 
     if (!user) {
       log({
-        message: 'Somebody tried to access a restricted endpoint without being authenticated',
+        message:
+          'Somebody tried to access a restricted endpoint without being authenticated',
         level: LOG_LEVELS.DEBUG,
       });
       throw new ForbiddenException('Unauthorized');
@@ -39,7 +45,8 @@ export class RolesGuard implements CanActivate {
 
     if (!hasRole) {
       log({
-        message: 'Somebody tried to access a restricted endpoint without having the required role',
+        message:
+          'Somebody tried to access a restricted endpoint without having the required role',
         level: LOG_LEVELS.DEBUG,
       });
       throw new ForbiddenException('Forbidden');

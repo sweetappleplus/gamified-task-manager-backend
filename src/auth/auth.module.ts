@@ -7,7 +7,11 @@ import { OtpService } from './otp.service.js';
 import { AuthJwtService } from './jwt.service.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { JWT_SECRET, LOG_LEVELS, JWT_EXPIRATION_TIME_MINUTES } from '../consts/index.js';
+import {
+  JWT_SECRET,
+  LOG_LEVELS,
+  JWT_EXPIRATION_TIME_MINUTES,
+} from '../consts/index.js';
 import { log } from '../utils/index.js';
 
 if (!JWT_SECRET) {
@@ -20,10 +24,13 @@ if (!JWT_SECRET) {
 
 if (!JWT_EXPIRATION_TIME_MINUTES) {
   log({
-    message: 'JWT_EXPIRATION_TIME_MINUTES is not set in the environment variables',
+    message:
+      'JWT_EXPIRATION_TIME_MINUTES is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new Error('JWT_EXPIRATION_TIME_MINUTES is not set in the environment variables');
+  throw new Error(
+    'JWT_EXPIRATION_TIME_MINUTES is not set in the environment variables',
+  );
 }
 
 @Module({
@@ -35,7 +42,13 @@ if (!JWT_EXPIRATION_TIME_MINUTES) {
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, OtpService, AuthJwtService, JwtStrategy, PrismaService],
+  providers: [
+    AuthService,
+    OtpService,
+    AuthJwtService,
+    JwtStrategy,
+    PrismaService,
+  ],
   exports: [AuthService, AuthJwtService],
 })
 export class AuthModule {}
