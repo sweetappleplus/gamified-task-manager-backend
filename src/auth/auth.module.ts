@@ -19,7 +19,10 @@ if (!JWT_SECRET) {
     message: 'JWT_SECRET is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 if (!JWT_EXPIRATION_TIME_MINUTES) {
@@ -28,7 +31,10 @@ if (!JWT_EXPIRATION_TIME_MINUTES) {
       'JWT_EXPIRATION_TIME_MINUTES is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 @Module({

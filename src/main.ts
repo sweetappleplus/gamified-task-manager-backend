@@ -10,7 +10,10 @@ if (!PORT) {
     message: 'PORT is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 async function bootstrap() {

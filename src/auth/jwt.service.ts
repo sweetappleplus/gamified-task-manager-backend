@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service.js';
 import * as bcrypt from 'bcrypt';
@@ -16,7 +21,10 @@ if (!REFRESH_TOKEN_EXPIRY_DAYS) {
       'REFRESH_TOKEN_EXPIRY_DAYS is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 if (!ACCESS_TOKEN_EXPIRY_MINUTES) {
@@ -25,7 +33,10 @@ if (!ACCESS_TOKEN_EXPIRY_MINUTES) {
       'ACCESS_TOKEN_EXPIRY_MINUTES is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 export interface JwtPayload {

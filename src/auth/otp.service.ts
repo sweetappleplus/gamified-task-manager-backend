@@ -21,7 +21,10 @@ if (!OTP_EXPIRATION_TIME_MINUTES) {
       'OTP_EXPIRATION_TIME_MINUTES is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 if (!OTP_ATTEMPTS_MIN_DURATION_MINUTES) {
@@ -30,7 +33,10 @@ if (!OTP_ATTEMPTS_MIN_DURATION_MINUTES) {
       'OTP_ATTEMPTS_MIN_DURATION_MINUTES is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 if (!SMTP_FROM) {
@@ -38,7 +44,10 @@ if (!SMTP_FROM) {
     message: 'SMTP_FROM is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 if (!SMTP_HOST) {
@@ -46,7 +55,10 @@ if (!SMTP_HOST) {
     message: 'SMTP_HOST is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 if (!SMTP_PORT) {
@@ -54,7 +66,10 @@ if (!SMTP_PORT) {
     message: 'SMTP_PORT is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 if (!SMTP_USER) {
@@ -62,7 +77,10 @@ if (!SMTP_USER) {
     message: 'SMTP_USER is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 if (!SMTP_PASS) {
@@ -70,7 +88,10 @@ if (!SMTP_PASS) {
     message: 'SMTP_PASS is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 @Injectable()

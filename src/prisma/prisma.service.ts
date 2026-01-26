@@ -9,7 +9,10 @@ if (!DATABASE_URL) {
     message: 'DATABASE_URL is not set in the environment variables',
     level: LOG_LEVELS.CRITICAL,
   });
-  throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+  throw new HttpException(
+    'Internal server error',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
 }
 
 @Injectable()
