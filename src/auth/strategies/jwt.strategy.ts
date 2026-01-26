@@ -32,7 +32,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user || !user.isActive) {
       log({
         message: `User not found or inactive: ${payload.id}`,
-        level: LOG_LEVELS.ERROR,
+        level: LOG_LEVELS.DEBUG,
       });
       throw new UnauthorizedException('User not found or inactive');
     }

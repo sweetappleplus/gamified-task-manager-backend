@@ -24,9 +24,9 @@ export class RolesGuard implements CanActivate {
     if (!user) {
       log({
         message: 'Somebody tried to access a restricted endpoint without being authenticated',
-        level: LOG_LEVELS.ERROR,
+        level: LOG_LEVELS.DEBUG,
       });
-      throw new ForbiddenException('Somebody tried to access a restricted endpoint without being authenticated');
+      throw new ForbiddenException('Unauthorized');
     }
 
     // SUPER_ADMIN can access all roles
@@ -40,9 +40,9 @@ export class RolesGuard implements CanActivate {
     if (!hasRole) {
       log({
         message: 'Somebody tried to access a restricted endpoint without having the required role',
-        level: LOG_LEVELS.ERROR,
+        level: LOG_LEVELS.DEBUG,
       });
-      throw new ForbiddenException('Somebody tried to access a restricted endpoint without having the required role');
+      throw new ForbiddenException('Forbidden');
     }
 
     return true;
