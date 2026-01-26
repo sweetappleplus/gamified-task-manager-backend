@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import { LOG_LEVELS } from '../consts/index.js';
-import { LogLevel } from '../types/index.js';
+import { LogMessage } from '../types/index.js';
 
-export const log = (message: string, level: LogLevel = LOG_LEVELS.DEBUG, datetime: Date = new Date()) => {
+export const log = ({message, level = LOG_LEVELS.DEBUG, datetime = new Date()}: LogMessage) => {
   const logMessage = `${datetime.toISOString()}: ${level}: ${message}`;
   switch (level) {
     case LOG_LEVELS.SUCCESS:

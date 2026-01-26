@@ -6,7 +6,10 @@ import { LOG_LEVELS, PORT } from './consts/index.js';
 import { log } from './utils/index.js';
 
 if (!PORT) {
-  log('PORT is not set in the environment variables', LOG_LEVELS.CRITICAL);
+  log({
+    message: 'PORT is not set in the environment variables',
+    level: LOG_LEVELS.CRITICAL,
+  });
   throw new Error('PORT is not set in the environment variables');
 }
 
@@ -26,6 +29,9 @@ async function bootstrap() {
   );
   
   await app.listen(Number(PORT));
-  log(`Application is running on: http://localhost:${PORT}`, LOG_LEVELS.SUCCESS);
+  log({
+    message: `Application is running on: http://localhost:${PORT}`,
+    level: LOG_LEVELS.SUCCESS,
+  });
 }
 void bootstrap();
