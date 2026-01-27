@@ -5,10 +5,11 @@ import { AppService } from './app.service.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AuthModule } from '../auth/auth.module.js';
 import { TaskCategoryModule } from '../task-category/task-category.module.js';
+import { SystemSettingModule } from '../system-setting/system-setting.module.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 
 @Module({
-  imports: [AuthModule, TaskCategoryModule],
+  imports: [AuthModule, TaskCategoryModule, SystemSettingModule],
   controllers: [AppController],
   providers: [
     AppService,
