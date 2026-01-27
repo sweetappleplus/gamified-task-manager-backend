@@ -17,8 +17,8 @@ import {
   TaskCategoryResponseDto,
 } from './dto/index.js';
 import { Public, Roles } from '../auth/decorators/index.js';
-import { UserRole } from '../types/index.js';
-import { ApiResponse } from '../types/index.js';
+import { UserRole } from '../modules/types/index.js';
+import { ApiResponse } from '../modules/types/index.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 
 @Controller('task-categories')

@@ -7,7 +7,7 @@ import {
   MaxLength,
   IsPositive,
 } from 'class-validator';
-import { TASK_TYPES, type TaskType } from '../../types/index.js';
+import { TASK_TYPES, type TaskType } from '../../modules/types/index.js';
 
 export class CreateBonusConfigDto {
   @IsNotEmpty()

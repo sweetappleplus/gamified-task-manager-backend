@@ -1,4 +1,4 @@
-import type { SystemSetting } from '../../types/index.js';
+import type { SystemSetting } from '../../modules/types/index.js';
 
 export class SystemSettingResponseDto implements SystemSetting {
   key!: string;

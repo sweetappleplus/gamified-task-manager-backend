@@ -8,8 +8,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { JwtPayload } from '../jwt.service.js';
-import { JWT_SECRET, LOG_LEVELS } from '../../consts/index.js';
-import { log } from '../../utils/index.js';
+import { JWT_SECRET, LOG_LEVELS } from '../../modules/consts/index.js';
+import { log } from '../../modules/utils/index.js';
 
 if (!JWT_SECRET) {
   log({

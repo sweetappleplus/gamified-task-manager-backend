@@ -1,6 +1,6 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { AppService } from './app.service.js';
-import type { ApiResponse } from '../types/index.js';
+import type { ApiResponse } from '../modules/types/index.js';
 import { Public } from '../auth/decorators/index.js';
 
 @Controller()

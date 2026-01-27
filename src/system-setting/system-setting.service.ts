@@ -10,9 +10,9 @@ import {
   SystemSettingResponseDto,
   UpdateSystemSettingDto,
 } from './dto/index.js';
-import { ApiResponse } from '../types/index.js';
-import { API_STATUSES, LOG_LEVELS } from '../consts/index.js';
-import { log } from '../utils/index.js';
+import { ApiResponse } from '../modules/types/index.js';
+import { API_STATUSES, LOG_LEVELS } from '../modules/consts/index.js';
+import { log } from '../modules/utils/index.js';
 
 @Injectable()
 export class SystemSettingService {

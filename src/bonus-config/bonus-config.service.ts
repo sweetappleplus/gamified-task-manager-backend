@@ -10,9 +10,9 @@ import {
   BonusConfigResponseDto,
   UpdateBonusConfigDto,
 } from './dto/index.js';
-import { ApiResponse, type TaskType } from '../types/index.js';
-import { API_STATUSES, LOG_LEVELS } from '../consts/index.js';
-import { log } from '../utils/index.js';
+import { ApiResponse, type TaskType } from '../modules/types/index.js';
+import { API_STATUSES, LOG_LEVELS } from '../modules/consts/index.js';
+import { log } from '../modules/utils/index.js';
 
 @Injectable()
 export class BonusConfigService {

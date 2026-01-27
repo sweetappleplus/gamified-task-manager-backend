@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client.js';
-import { DATABASE_URL, LOG_LEVELS } from '../consts/index.js';
-import { log } from '../utils/index.js';
+import { DATABASE_URL, LOG_LEVELS } from '../modules/consts/index.js';
+import { log } from '../modules/utils/index.js';
 
 if (!DATABASE_URL) {
   log({

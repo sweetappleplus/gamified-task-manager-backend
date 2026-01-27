@@ -12,7 +12,11 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from './notification.service.js';
 import { CreateNotificationDto, NotificationResponseDto } from './dto/index.js';
-import { ApiResponse, type CurrentUserData, UserRole } from '../types/index.js';
+import {
+  ApiResponse,
+  type CurrentUserData,
+  UserRole,
+} from '../modules/types/index.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 import { CurrentUser, Roles } from '../auth/decorators/index.js';
 

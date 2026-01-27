@@ -11,8 +11,8 @@ import {
   JWT_SECRET,
   LOG_LEVELS,
   JWT_EXPIRATION_TIME_MINUTES,
-} from '../consts/index.js';
-import { log } from '../utils/index.js';
+} from '../modules/consts/index.js';
+import { log } from '../modules/utils/index.js';
 
 if (!JWT_SECRET) {
   log({

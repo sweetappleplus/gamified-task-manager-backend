@@ -6,7 +6,7 @@ import {
   IsOptional,
   IsPositive,
 } from 'class-validator';
-import { TASK_TYPES, TaskType } from '../../types/index.js';
+import { TASK_TYPES, TaskType } from '../../modules/types/index.js';
 
 export class UpdateLevelConfigDto {
   @IsOptional()

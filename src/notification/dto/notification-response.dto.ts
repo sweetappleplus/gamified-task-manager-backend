@@ -1,4 +1,7 @@
-import type { Notification, NotificationType } from '../../types/index.js';
+import type {
+  Notification,
+  NotificationType,
+} from '../../modules/types/index.js';
 
 export class NotificationResponseDto implements Notification {
   id!: string;

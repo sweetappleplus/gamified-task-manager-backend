@@ -3,7 +3,7 @@
 import "dotenv/config";
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { defineConfig } from "prisma/config";
-import { DATABASE_URL } from "./src/consts/index.js";
+import { DATABASE_URL } from "./src/modules/consts/index.js";
 
 if (!DATABASE_URL) {
   throw new HttpException('DATABASE_URL is not set in the environment variables', HttpStatus.INTERNAL_SERVER_ERROR);

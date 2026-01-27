@@ -9,7 +9,7 @@ import {
 import {
   PAYMENT_METHOD_TYPES,
   type PaymentMethodType,
-} from '../../types/index.js';
+} from '../../modules/types/index.js';
 
 export class CreatePaymentMethodDto {
   @IsNotEmpty()

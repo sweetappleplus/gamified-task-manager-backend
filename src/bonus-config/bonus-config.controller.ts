@@ -16,7 +16,11 @@ import {
   BonusConfigResponseDto,
   UpdateBonusConfigDto,
 } from './dto/index.js';
-import { ApiResponse, UserRole, type TaskType } from '../types/index.js';
+import {
+  ApiResponse,
+  UserRole,
+  type TaskType,
+} from '../modules/types/index.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 import { Public, Roles } from '../auth/decorators/index.js';
 

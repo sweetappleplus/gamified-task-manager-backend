@@ -16,7 +16,7 @@ import {
   SystemSettingResponseDto,
   UpdateSystemSettingDto,
 } from './dto/index.js';
-import { ApiResponse, UserRole } from '../types/index.js';
+import { ApiResponse, UserRole } from '../modules/types/index.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 import { Public, Roles } from '../auth/decorators/index.js';
 

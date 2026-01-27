@@ -6,9 +6,13 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserRole, TUserRole, CurrentUserData } from '../../types/index.js';
-import { LOG_LEVELS, ROLES_KEY } from '../../consts/index.js';
-import { log } from '../../utils/index.js';
+import {
+  UserRole,
+  TUserRole,
+  CurrentUserData,
+} from '../../modules/types/index.js';
+import { LOG_LEVELS, ROLES_KEY } from '../../modules/consts/index.js';
+import { log } from '../../modules/utils/index.js';
 
 interface RequestWithUser extends Request {
   user?: CurrentUserData;

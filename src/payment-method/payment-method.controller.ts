@@ -16,7 +16,7 @@ import {
   PaymentMethodResponseDto,
   UpdatePaymentMethodDto,
 } from './dto/index.js';
-import { ApiResponse, type CurrentUserData } from '../types/index.js';
+import { ApiResponse, type CurrentUserData } from '../modules/types/index.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 import { CurrentUser } from '../auth/decorators/index.js';
 

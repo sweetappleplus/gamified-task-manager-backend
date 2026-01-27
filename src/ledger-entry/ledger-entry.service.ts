@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateLedgerEntryDto, LedgerEntryResponseDto } from './dto/index.js';
-import { ApiResponse, LEDGER_TYPES } from '../types/index.js';
-import { API_STATUSES, LOG_LEVELS } from '../consts/index.js';
-import { log } from '../utils/index.js';
-import { LedgerType } from '../types/index.js';
+import { ApiResponse, LEDGER_TYPES } from '../modules/types/index.js';
+import { API_STATUSES, LOG_LEVELS } from '../modules/consts/index.js';
+import { log } from '../modules/utils/index.js';
+import { LedgerType } from '../modules/types/index.js';
 
 @Injectable()
 export class LedgerEntryService {

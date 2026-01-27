@@ -8,7 +8,7 @@ import {
 import {
   NOTIFICATION_TYPES,
   type NotificationType,
-} from '../../types/index.js';
+} from '../../modules/types/index.js';
 
 export class CreateNotificationDto {
   @IsNotEmpty()

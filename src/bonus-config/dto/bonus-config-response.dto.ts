@@ -1,4 +1,4 @@
-import type { BonusConfig, TaskType } from '../../types/index.js';
+import type { BonusConfig, TaskType } from '../../modules/types/index.js';
 
 export class BonusConfigResponseDto implements BonusConfig {
   id!: string;
