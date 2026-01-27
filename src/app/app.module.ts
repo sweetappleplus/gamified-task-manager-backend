@@ -10,6 +10,7 @@ import { LevelConfigModule } from '../level-config/level-config.module.js';
 import { PaymentMethodModule } from '../payment-method/payment-method.module.js';
 import { BonusConfigModule } from '../bonus-config/bonus-config.module.js';
 import { NotificationModule } from '../notification/notification.module.js';
+import { LedgerEntryModule } from '../ledger-entry/ledger-entry.module.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 
 @Module({
@@ -21,6 +22,7 @@ import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
     PaymentMethodModule,
     BonusConfigModule,
     NotificationModule,
+    LedgerEntryModule,
   ],
   controllers: [AppController],
   providers: [

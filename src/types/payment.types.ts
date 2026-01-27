@@ -27,3 +27,13 @@ export interface PaymentMethod {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface LedgerEntry {
+  id: string;
+  userId: string;
+  type: LedgerType;
+  amount: number;
+  description?: string | null;
+  relatedTaskId?: string | null;
+  createdAt: Date;
+}
