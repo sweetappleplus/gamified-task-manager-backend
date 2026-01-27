@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module.js';
 import { TaskCategoryModule } from '../task-category/task-category.module.js';
 import { SystemSettingModule } from '../system-setting/system-setting.module.js';
 import { LevelConfigModule } from '../level-config/level-config.module.js';
+import { PaymentMethodModule } from '../payment-method/payment-method.module.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 
 @Module({
@@ -15,6 +16,7 @@ import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
     TaskCategoryModule,
     SystemSettingModule,
     LevelConfigModule,
+    PaymentMethodModule,
   ],
   controllers: [AppController],
   providers: [
