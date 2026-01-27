@@ -15,6 +15,11 @@ import {
   LOG_LEVELS,
 } from '../modules/consts/index.js';
 import { log } from '../modules/utils/index.js';
+import {
+  JwtPayload,
+  RefreshTokenResult,
+  TokenPair,
+} from '../modules/types/index.js';
 
 if (!REFRESH_TOKEN_EXPIRY_DAYS) {
   log({
@@ -38,23 +43,6 @@ if (!ACCESS_TOKEN_EXPIRY_MINUTES) {
     'ACCESS_TOKEN_EXPIRY_MINUTES is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
-}
-
-export interface JwtPayload {
-  id: string;
-  email: string;
-  role: string;
-}
-
-export interface TokenPair {
-  accessToken: string;
-  refreshToken: string;
-}
-
-export interface RefreshTokenResult extends TokenPair {
-  userId: string;
-  email: string;
-  role: string;
 }
 
 @Injectable()

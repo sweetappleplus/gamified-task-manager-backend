@@ -6,3 +6,4 @@ export * from './payment.types.js';
 export * from './notification.types.js';
 export * from './gamification.types.js';
 export * from './system.types.js';
+export * from './auth.types.js';
