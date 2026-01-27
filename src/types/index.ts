@@ -4,3 +4,5 @@ export * from './user.types.js';
 export * from './task.types.js';
 export * from './payment.types.js';
 export * from './notification.types.js';
+export * from './gamification.types.js';
+export * from './system.types.js';

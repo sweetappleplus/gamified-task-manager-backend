@@ -1,6 +1,6 @@
-import { PaymentMethodType } from '../../types/index.js';
+import type { PaymentMethod, PaymentMethodType } from '../../types/index.js';
 
-export class PaymentMethodResponseDto {
+export class PaymentMethodResponseDto implements PaymentMethod {
   id!: string;
   userId!: string;
   type!: PaymentMethodType;

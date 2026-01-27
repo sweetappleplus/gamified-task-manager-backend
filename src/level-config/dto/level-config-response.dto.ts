@@ -1,6 +1,6 @@
-import { TaskType } from '../../types/index.js';
+import type { LevelConfig, TaskType } from '../../types/index.js';
 
-export class LevelConfigResponseDto {
+export class LevelConfigResponseDto implements LevelConfig {
   level!: number;
   xpRequired!: number;
   earningMultiplier!: number;

@@ -9,7 +9,7 @@ import {
   PaymentMethodResponseDto,
   UpdatePaymentMethodDto,
 } from './dto/index.js';
-import { ApiResponse, PaymentMethodType } from '../types/index.js';
+import { ApiResponse, PaymentMethod } from '../types/index.js';
 import { API_STATUSES, LOG_LEVELS } from '../consts/index.js';
 import { log } from '../utils/index.js';
 
@@ -22,17 +22,12 @@ export class PaymentMethodService {
     payload: CreatePaymentMethodDto,
   ): Promise<ApiResponse<PaymentMethodResponseDto>> {
     try {
-      const data: {
-        userId: string;
-        type: PaymentMethodType;
-        provider?: string;
-        accountInfo: string;
-        isDefault?: boolean;
-      } = {
+      const data: Omit<PaymentMethod, 'id' | 'createdAt' | 'updatedAt'> = {
         userId,
         type: payload.type,
         provider: payload.provider,
         accountInfo: payload.accountInfo,
+        isDefault: payload.isDefault ?? false,
       };
 
       // If new method is default, unset existing defaults for this user

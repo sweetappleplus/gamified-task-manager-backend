@@ -38,3 +38,11 @@ export const SPRINT_STATUSES = {
 
 export type SprintStatus =
   (typeof SPRINT_STATUSES)[keyof typeof SPRINT_STATUSES];
+
+export interface TaskCategory {
+  id: string;
+  name: string;
+  description?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}

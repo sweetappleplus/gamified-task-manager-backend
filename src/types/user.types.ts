@@ -14,6 +14,6 @@ export interface CurrentUserData {
 export interface User {
   id: string;
   email: string;
-  name?: string;
+  name?: string | null;
   role: TUserRole;
 }

@@ -16,3 +16,14 @@ export const LEDGER_TYPES = {
 } as const;
 
 export type LedgerType = (typeof LEDGER_TYPES)[keyof typeof LEDGER_TYPES];
+
+export interface PaymentMethod {
+  id: string;
+  userId: string;
+  type: PaymentMethodType;
+  provider?: string | null;
+  accountInfo: string;
+  isDefault: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
