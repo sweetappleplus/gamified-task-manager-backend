@@ -328,7 +328,6 @@ model BonusConfig {
   name         String   @unique
   description  String?
   bonusPercent Decimal // Percentage of base reward to add as bonus
-  isActive     Boolean  @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
