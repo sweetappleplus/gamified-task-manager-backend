@@ -8,3 +8,13 @@ export interface LevelConfig {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface BonusConfig {
+  id: string;
+  TaskType: TaskType;
+  name: string;
+  description?: string | null;
+  bonusPercent: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
