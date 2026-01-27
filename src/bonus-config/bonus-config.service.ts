@@ -10,7 +10,7 @@ import {
   BonusConfigResponseDto,
   UpdateBonusConfigDto,
 } from './dto/index.js';
-import { ApiResponse } from '../types/index.js';
+import { ApiResponse, type TaskType } from '../types/index.js';
 import { API_STATUSES, LOG_LEVELS } from '../consts/index.js';
 import { log } from '../utils/index.js';
 
@@ -115,10 +115,10 @@ export class BonusConfigService {
   }
 
   async findByTaskType(
-    taskType: string,
+    taskType: TaskType,
   ): Promise<ApiResponse<BonusConfigResponseDto>> {
     const bonusConfig = await this.prisma.bonusConfig.findUnique({
-      where: { TaskType: taskType as any },
+      where: { TaskType: taskType },
     });
 
     if (!bonusConfig) {
