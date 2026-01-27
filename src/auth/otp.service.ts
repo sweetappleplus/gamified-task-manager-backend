@@ -234,7 +234,9 @@ export class OtpService {
       });
     } catch (error) {
       log({
-        message: `Error invalidating existing unused OTPs: ${error}`,
+        message: `Error invalidating existing unused OTPs: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);
@@ -258,7 +260,9 @@ export class OtpService {
       });
     } catch (error) {
       log({
-        message: `Error storing OTP in database: ${error}`,
+        message: `Error storing OTP in database: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);
@@ -308,7 +312,9 @@ export class OtpService {
       });
     } catch (error) {
       log({
-        message: `Error marking OTP as used: ${error}`,
+        message: `Error marking OTP as used: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);
@@ -329,7 +335,9 @@ export class OtpService {
       });
     } catch (error) {
       log({
-        message: `Error cleaning up expired OTPs: ${error}`,
+        message: `Error cleaning up expired OTPs: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);

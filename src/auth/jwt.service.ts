@@ -112,7 +112,9 @@ export class AuthJwtService {
       });
     } catch (error) {
       log({
-        message: `Error creating refresh token: ${error}`,
+        message: `Error creating refresh token: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);
@@ -186,7 +188,9 @@ export class AuthJwtService {
       });
     } catch (error) {
       log({
-        message: `Error revoking refresh token: ${error}`,
+        message: `Error revoking refresh token: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);
@@ -233,7 +237,9 @@ export class AuthJwtService {
           return;
         } catch (error) {
           log({
-            message: `Error revoking refresh token: ${error}`,
+            message: `Error revoking refresh token: ${
+              error instanceof Error ? error.message : String(error)
+            }`,
             level: LOG_LEVELS.ERROR,
           });
           throw new InternalServerErrorException((error as Error).message);
@@ -258,7 +264,9 @@ export class AuthJwtService {
       });
     } catch (error) {
       log({
-        message: `Error revoking all user tokens: ${error}`,
+        message: `Error revoking all user tokens: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);
@@ -277,7 +285,9 @@ export class AuthJwtService {
       });
     } catch (error) {
       log({
-        message: `Error cleaning up expired tokens: ${error}`,
+        message: `Error cleaning up expired tokens: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);

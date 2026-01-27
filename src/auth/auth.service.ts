@@ -78,7 +78,9 @@ export class AuthService {
         });
       } catch (error) {
         log({
-          message: `Error creating user: ${error}`,
+          message: `Error creating user: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
           level: LOG_LEVELS.ERROR,
         });
         throw new InternalServerErrorException((error as Error).message);
@@ -104,7 +106,9 @@ export class AuthService {
       });
     } catch (error) {
       log({
-        message: `Error updating last login: ${error}`,
+        message: `Error updating last login: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);

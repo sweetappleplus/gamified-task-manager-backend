@@ -53,7 +53,9 @@ export class TaskCategoryService {
       };
     } catch (error) {
       log({
-        message: `Error creating task category: ${error}`,
+        message: `Error creating task category: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);
@@ -135,7 +137,9 @@ export class TaskCategoryService {
       };
     } catch (error) {
       log({
-        message: `Error updating task category: ${error}`,
+        message: `Error updating task category: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);
@@ -158,7 +162,9 @@ export class TaskCategoryService {
       });
     } catch (error) {
       log({
-        message: `Error deleting task category: ${error}`,
+        message: `Error deleting task category: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
         level: LOG_LEVELS.ERROR,
       });
       throw new InternalServerErrorException((error as Error).message);
