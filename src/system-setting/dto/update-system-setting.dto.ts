@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class UpdateSystemSettingDto {
   @IsOptional()
@@ -7,6 +7,5 @@ export class UpdateSystemSettingDto {
 
   @IsOptional()
   @IsString()
-  @MaxLength(255)
   description?: string;
 }
