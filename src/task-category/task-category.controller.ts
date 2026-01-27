@@ -25,9 +25,9 @@ import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 export class TaskCategoryController {
   constructor(private readonly taskCategoryService: TaskCategoryService) {}
 
-  @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() createTaskCategoryDto: CreateTaskCategoryDto,
@@ -35,15 +35,15 @@ export class TaskCategoryController {
     return this.taskCategoryService.create(createTaskCategoryDto);
   }
 
-  @Get()
   @Public()
+  @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(): Promise<ApiResponse<TaskCategoryResponseDto[]>> {
     return this.taskCategoryService.findAll();
   }
 
-  @Get(':id')
   @Public()
+  @Get(':id')
   @HttpCode(HttpStatus.OK)
   async findOne(
     @Param('id') id: string,
@@ -51,9 +51,9 @@ export class TaskCategoryController {
     return this.taskCategoryService.findOne(id);
   }
 
-  @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
@@ -62,9 +62,9 @@ export class TaskCategoryController {
     return this.taskCategoryService.update(id, updateTaskCategoryDto);
   }
 
-  @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
+  @Delete(':id')
   @HttpCode(HttpStatus.OK)
   async remove(@Param('id') id: string): Promise<ApiResponse<void>> {
     return this.taskCategoryService.remove(id);

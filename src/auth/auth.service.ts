@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { OtpService } from './otp.service.js';
 import { AuthJwtService } from './jwt.service.js';
@@ -62,15 +66,23 @@ export class AuthService {
 
     if (!user) {
       // Create new user with WORKER role by default
-      user = await this.prisma.user.create({
-        data: {
-          email,
-        },
-      });
-      log({
-        message: `New user registered: ${email}`,
-        level: LOG_LEVELS.INFO,
-      });
+      try {
+        user = await this.prisma.user.create({
+          data: {
+            email,
+          },
+        });
+        log({
+          message: `New user registered: ${email}`,
+          level: LOG_LEVELS.INFO,
+        });
+      } catch (error) {
+        log({
+          message: `Error creating user: ${error}`,
+          level: LOG_LEVELS.ERROR,
+        });
+        throw new InternalServerErrorException((error as Error).message);
+      }
     }
 
     // Check if user is active
@@ -83,12 +95,20 @@ export class AuthService {
     }
 
     // Update last login
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: {
-        lastLoginAt: new Date(),
-      },
-    });
+    try {
+      await this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          lastLoginAt: new Date(),
+        },
+      });
+    } catch (error) {
+      log({
+        message: `Error updating last login: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
 
     // Generate tokens
     const { accessToken, refreshToken } =

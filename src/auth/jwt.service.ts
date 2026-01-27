@@ -2,6 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -99,15 +100,23 @@ export class AuthJwtService {
     expiresAt.setDate(expiresAt.getDate() + Number(REFRESH_TOKEN_EXPIRY_DAYS));
 
     // Store refresh token in database
-    await this.prisma.refreshToken.create({
-      data: {
-        userId,
-        tokenHash,
-        deviceInfo,
-        ipAddress,
-        expiresAt,
-      },
-    });
+    try {
+      await this.prisma.refreshToken.create({
+        data: {
+          userId,
+          tokenHash,
+          deviceInfo,
+          ipAddress,
+          expiresAt,
+        },
+      });
+    } catch (error) {
+      log({
+        message: `Error creating refresh token: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
 
     return token;
   }
@@ -167,13 +176,21 @@ export class AuthJwtService {
     const token = matchedToken;
 
     // Revoke the old token
-    await this.prisma.refreshToken.update({
-      where: { id: token.id },
-      data: {
-        isRevoked: true,
-        lastUsedAt: new Date(),
-      },
-    });
+    try {
+      await this.prisma.refreshToken.update({
+        where: { id: token.id },
+        data: {
+          isRevoked: true,
+          lastUsedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      log({
+        message: `Error revoking refresh token: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
 
     // Generate new token pair
     const tokenPair = await this.generateTokenPair(
@@ -208,11 +225,19 @@ export class AuthJwtService {
     for (const token of tokens) {
       const isValid = await bcrypt.compare(refreshToken, token.tokenHash);
       if (isValid) {
-        await this.prisma.refreshToken.update({
-          where: { id: token.id },
-          data: { isRevoked: true },
-        });
-        return;
+        try {
+          await this.prisma.refreshToken.update({
+            where: { id: token.id },
+            data: { isRevoked: true },
+          });
+          return;
+        } catch (error) {
+          log({
+            message: `Error revoking refresh token: ${error}`,
+            level: LOG_LEVELS.ERROR,
+          });
+          throw new InternalServerErrorException((error as Error).message);
+        }
       }
     }
   }
@@ -221,25 +246,41 @@ export class AuthJwtService {
    * Revoke all refresh tokens for a user
    */
   async revokeAllUserTokens(userId: string): Promise<void> {
-    await this.prisma.refreshToken.updateMany({
-      where: {
-        userId,
-        isRevoked: false,
-      },
-      data: {
-        isRevoked: true,
-      },
-    });
+    try {
+      await this.prisma.refreshToken.updateMany({
+        where: {
+          userId,
+          isRevoked: false,
+        },
+        data: {
+          isRevoked: true,
+        },
+      });
+    } catch (error) {
+      log({
+        message: `Error revoking all user tokens: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
   }
 
   /**
    * Clean up expired refresh tokens (can be called by a cron job)
    */
   async cleanupExpiredTokens(): Promise<void> {
-    await this.prisma.refreshToken.deleteMany({
-      where: {
-        OR: [{ expiresAt: { lt: new Date() } }, { isRevoked: true }],
-      },
-    });
+    try {
+      await this.prisma.refreshToken.deleteMany({
+        where: {
+          OR: [{ expiresAt: { lt: new Date() } }, { isRevoked: true }],
+        },
+      });
+    } catch (error) {
+      log({
+        message: `Error cleaning up expired tokens: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
   }
 }

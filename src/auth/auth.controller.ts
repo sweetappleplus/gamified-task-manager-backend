@@ -50,7 +50,6 @@ export class AuthController {
     };
   }
 
-  @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refreshToken(

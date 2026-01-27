@@ -1,4 +1,9 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
@@ -214,18 +219,26 @@ export class OtpService {
     }
 
     // Invalidate any existing unused OTPs for this email
-    await this.prisma.otp.updateMany({
-      where: {
-        email,
-        isUsed: false,
-        expiresAt: {
-          gt: new Date(),
+    try {
+      await this.prisma.otp.updateMany({
+        where: {
+          email,
+          isUsed: false,
+          expiresAt: {
+            gt: new Date(),
+          },
         },
-      },
-      data: {
-        isUsed: true,
-      },
-    });
+        data: {
+          isUsed: true,
+        },
+      });
+    } catch (error) {
+      log({
+        message: `Error invalidating existing unused OTPs: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
 
     // Generate new OTP
     const otp = this.generateOtp();
@@ -234,14 +247,22 @@ export class OtpService {
     expiresAt.setMinutes(expiresAt.getMinutes() + this.OTP_EXPIRY_MINUTES);
 
     // Store OTP in database
-    await this.prisma.otp.create({
-      data: {
-        email,
-        userId: userId || null,
-        otpHash,
-        expiresAt,
-      },
-    });
+    try {
+      await this.prisma.otp.create({
+        data: {
+          email,
+          userId: userId || null,
+          otpHash,
+          expiresAt,
+        },
+      });
+    } catch (error) {
+      log({
+        message: `Error storing OTP in database: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
 
     // Send OTP via email
     await this.sendOtpEmail(email, otp);
@@ -280,10 +301,18 @@ export class OtpService {
     }
 
     // Mark OTP as used
-    await this.prisma.otp.update({
-      where: { id: otpRecord.id },
-      data: { isUsed: true },
-    });
+    try {
+      await this.prisma.otp.update({
+        where: { id: otpRecord.id },
+        data: { isUsed: true },
+      });
+    } catch (error) {
+      log({
+        message: `Error marking OTP as used: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
 
     return { isValid: true, userId: otpRecord.userId || undefined };
   }
@@ -292,10 +321,18 @@ export class OtpService {
    * Clean up expired OTPs (can be called by a cron job)
    */
   async cleanupExpiredOtps(): Promise<void> {
-    await this.prisma.otp.deleteMany({
-      where: {
-        OR: [{ expiresAt: { lt: new Date() } }, { isUsed: true }],
-      },
-    });
+    try {
+      await this.prisma.otp.deleteMany({
+        where: {
+          OR: [{ expiresAt: { lt: new Date() } }, { isUsed: true }],
+        },
+      });
+    } catch (error) {
+      log({
+        message: `Error cleaning up expired OTPs: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
   }
 }

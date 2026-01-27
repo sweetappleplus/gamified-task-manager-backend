@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import {
@@ -31,24 +32,32 @@ export class TaskCategoryService {
       );
     }
 
-    const category = await this.prisma.taskCategory.create({
-      data: {
-        name: createDto.name,
-        description: createDto.description,
-      },
-    });
+    try {
+      const category = await this.prisma.taskCategory.create({
+        data: {
+          name: createDto.name,
+          description: createDto.description,
+        },
+      });
 
-    log({
-      message: `New task category created: ${category.name}`,
-      level: LOG_LEVELS.INFO,
-    });
+      log({
+        message: `New task category created: ${category.name}`,
+        level: LOG_LEVELS.INFO,
+      });
 
-    return {
-      status: API_STATUSES.SUCCESS,
-      message: 'Task category created successfully',
-      data: category,
-      timestamp: new Date().toISOString(),
-    };
+      return {
+        status: API_STATUSES.SUCCESS,
+        message: 'Task category created successfully',
+        data: category,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      log({
+        message: `Error creating task category: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
   }
 
   async findAll(): Promise<ApiResponse<TaskCategoryResponseDto[]>> {
@@ -107,22 +116,30 @@ export class TaskCategoryService {
       }
     }
 
-    const updated = await this.prisma.taskCategory.update({
-      where: { id },
-      data: updateDto,
-    });
+    try {
+      const updated = await this.prisma.taskCategory.update({
+        where: { id },
+        data: updateDto,
+      });
 
-    log({
-      message: `Task category updated: ${updated.name}`,
-      level: LOG_LEVELS.INFO,
-    });
+      log({
+        message: `Task category updated: ${updated.name}`,
+        level: LOG_LEVELS.INFO,
+      });
 
-    return {
-      status: API_STATUSES.SUCCESS,
-      message: 'Task category updated successfully',
-      data: updated,
-      timestamp: new Date().toISOString(),
-    };
+      return {
+        status: API_STATUSES.SUCCESS,
+        message: 'Task category updated successfully',
+        data: updated,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      log({
+        message: `Error updating task category: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
   }
 
   async remove(id: string): Promise<ApiResponse<void>> {
@@ -135,9 +152,17 @@ export class TaskCategoryService {
       throw new NotFoundException(`Task category with id "${id}" is not found`);
     }
 
-    await this.prisma.taskCategory.delete({
-      where: { id },
-    });
+    try {
+      await this.prisma.taskCategory.delete({
+        where: { id },
+      });
+    } catch (error) {
+      log({
+        message: `Error deleting task category: ${error}`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
 
     log({
       message: `Task category deleted: ${existing.name}`,
