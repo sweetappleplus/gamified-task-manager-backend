@@ -108,7 +108,6 @@ export class OtpService {
   );
 
   constructor(private prisma: PrismaService) {
-    // Initialize email transporter
     this.transporter = nodemailer.createTransport({
       host: SMTP_HOST,
       port: Number(SMTP_PORT),
@@ -120,30 +119,18 @@ export class OtpService {
     });
   }
 
-  /**
-   * Generate a random 6-digit OTP
-   */
   private generateOtp(): string {
     return crypto.randomInt(100000, 999999).toString();
   }
 
-  /**
-   * Hash OTP for secure storage
-   */
   private async hashOtp(otp: string): Promise<string> {
     return bcrypt.hash(otp, 10);
   }
 
-  /**
-   * Verify OTP against hash
-   */
   private async verifyOtpHash(otp: string, hash: string): Promise<boolean> {
     return bcrypt.compare(otp, hash);
   }
 
-  /**
-   * Send OTP email
-   */
   private async sendOtpEmail(email: string, otp: string): Promise<void> {
     const mailOptions = {
       from: SMTP_FROM,
@@ -177,11 +164,7 @@ export class OtpService {
     }
   }
 
-  /**
-   * Generate and send OTP
-   */
   async generateAndSendOtp(email: string, userId?: string): Promise<void> {
-    // Check if there's a recent OTP attempt within the minimum duration
     const minDurationAgo = new Date();
     minDurationAgo.setMinutes(
       minDurationAgo.getMinutes() - this.MIN_DURATION_MINUTES,
@@ -218,7 +201,6 @@ export class OtpService {
       );
     }
 
-    // Invalidate any existing unused OTPs for this email
     try {
       await this.prisma.otp.updateMany({
         where: {
@@ -242,13 +224,11 @@ export class OtpService {
       throw new InternalServerErrorException((error as Error).message);
     }
 
-    // Generate new OTP
     const otp = this.generateOtp();
     const otpHash = await this.hashOtp(otp);
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + this.OTP_EXPIRY_MINUTES);
 
-    // Store OTP in database
     try {
       await this.prisma.otp.create({
         data: {
@@ -268,18 +248,13 @@ export class OtpService {
       throw new InternalServerErrorException((error as Error).message);
     }
 
-    // Send OTP via email
     await this.sendOtpEmail(email, otp);
   }
 
-  /**
-   * Verify OTP code
-   */
   async verifyOtpCode(
     email: string,
     otp: string,
   ): Promise<{ isValid: boolean; userId?: string }> {
-    // Find the most recent unused OTP for this email
     const otpRecord = await this.prisma.otp.findFirst({
       where: {
         email,
@@ -297,14 +272,12 @@ export class OtpService {
       return { isValid: false };
     }
 
-    // Verify OTP
     const isValid = await this.verifyOtpHash(otp, otpRecord.otpHash);
 
     if (!isValid) {
       return { isValid: false };
     }
 
-    // Mark OTP as used
     try {
       await this.prisma.otp.update({
         where: { id: otpRecord.id },
@@ -323,9 +296,6 @@ export class OtpService {
     return { isValid: true, userId: otpRecord.userId || undefined };
   }
 
-  /**
-   * Clean up expired OTPs (can be called by a cron job)
-   */
   async cleanupExpiredOtps(): Promise<void> {
     try {
       await this.prisma.otp.deleteMany({

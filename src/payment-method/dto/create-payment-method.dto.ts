@@ -21,7 +21,6 @@ export class CreatePaymentMethodDto {
   @MaxLength(255)
   provider?: string;
 
-  // This can hold account number, wallet address, etc.
   @IsNotEmpty()
   @IsString()
   @MaxLength(1024)

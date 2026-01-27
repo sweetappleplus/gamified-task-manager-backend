@@ -30,7 +30,6 @@ export class PaymentMethodService {
         isDefault: payload.isDefault ?? false,
       };
 
-      // If new method is default, unset existing defaults for this user
       if (payload.isDefault) {
         await this.prisma.paymentMethod.updateMany({
           where: { userId, isDefault: true },
@@ -117,7 +116,6 @@ export class PaymentMethodService {
     }
 
     try {
-      // Handle default switching
       if (payload.isDefault) {
         await this.prisma.paymentMethod.updateMany({
           where: { userId, isDefault: true },

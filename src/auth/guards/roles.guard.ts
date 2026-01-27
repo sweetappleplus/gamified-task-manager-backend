@@ -44,12 +44,10 @@ export class RolesGuard implements CanActivate {
       throw new UnauthorizedException('Access is unauthorized');
     }
 
-    // SUPER_ADMIN can access all roles
     if (user.role === UserRole.SUPER_ADMIN) {
       return true;
     }
 
-    // Check if user has required role
     const hasRole = requiredRoles.includes(user.role);
 
     if (!hasRole) {

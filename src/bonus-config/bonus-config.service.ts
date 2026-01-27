@@ -21,7 +21,6 @@ export class BonusConfigService {
   async create(
     createDto: CreateBonusConfigDto,
   ): Promise<ApiResponse<BonusConfigResponseDto>> {
-    // Check if bonus config with same TaskType already exists
     const existingByTaskType = await this.prisma.bonusConfig.findUnique({
       where: { TaskType: createDto.TaskType },
     });
@@ -32,7 +31,6 @@ export class BonusConfigService {
       );
     }
 
-    // Check if bonus config with same name already exists
     const existingByName = await this.prisma.bonusConfig.findUnique({
       where: { name: createDto.name },
     });
@@ -150,7 +148,6 @@ export class BonusConfigService {
       throw new NotFoundException(`Bonus config with id "${id}" is not found`);
     }
 
-    // If TaskType is being updated, check for conflicts
     if (updateDto.TaskType && updateDto.TaskType !== existing.TaskType) {
       const taskTypeConflict = await this.prisma.bonusConfig.findUnique({
         where: { TaskType: updateDto.TaskType },
@@ -163,7 +160,6 @@ export class BonusConfigService {
       }
     }
 
-    // If name is being updated, check for conflicts
     if (updateDto.name && updateDto.name !== existing.name) {
       const nameConflict = await this.prisma.bonusConfig.findUnique({
         where: { name: updateDto.name },

@@ -19,17 +19,11 @@ export class AuthService {
     private jwtService: AuthJwtService,
   ) {}
 
-  /**
-   * Send OTP for login/registration
-   */
   async sendOtp(email: string): Promise<ApiResponse<void>> {
-    // Check if user exists
     const user = await this.prisma.user.findUnique({
       where: { email },
     });
 
-    // If user exists, send OTP for login
-    // If user doesn't exist, send OTP for registration (will create user after verification)
     await this.otpService.generateAndSendOtp(email, user?.id);
 
     return {
@@ -39,16 +33,12 @@ export class AuthService {
     };
   }
 
-  /**
-   * Verify OTP and login/register
-   */
   async verifyOtp(
     email: string,
     otp: string,
     deviceInfo?: string,
     ipAddress?: string,
   ): Promise<AuthResponseDto> {
-    // Verify OTP
     const verification = await this.otpService.verifyOtpCode(email, otp);
 
     if (!verification.isValid) {
@@ -59,13 +49,11 @@ export class AuthService {
       throw new UnauthorizedException('OTP code is invalid or expired');
     }
 
-    // Find or create user
     let user = await this.prisma.user.findUnique({
       where: { email },
     });
 
     if (!user) {
-      // Create new user with WORKER role by default
       try {
         user = await this.prisma.user.create({
           data: {
@@ -87,7 +75,6 @@ export class AuthService {
       }
     }
 
-    // Check if user is active
     if (!user.isActive) {
       log({
         message: `${email} user was trying to login with a deactivated account`,
@@ -96,7 +83,6 @@ export class AuthService {
       throw new UnauthorizedException('User account is deactivated');
     }
 
-    // Update last login
     try {
       await this.prisma.user.update({
         where: { id: user.id },
@@ -114,7 +100,6 @@ export class AuthService {
       throw new InternalServerErrorException((error as Error).message);
     }
 
-    // Generate tokens
     const { accessToken, refreshToken } =
       await this.jwtService.generateTokenPair(
         user.id,
@@ -136,9 +121,6 @@ export class AuthService {
     };
   }
 
-  /**
-   * Refresh access token
-   */
   async refreshToken(refreshToken: string): Promise<AuthResponseDto> {
     const result = await this.jwtService.refreshTokens(refreshToken);
 
@@ -164,9 +146,6 @@ export class AuthService {
     };
   }
 
-  /**
-   * Logout (revoke refresh token)
-   */
   async logout(refreshToken: string): Promise<ApiResponse<void>> {
     await this.jwtService.revokeRefreshToken(refreshToken);
     return {

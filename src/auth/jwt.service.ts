@@ -52,9 +52,6 @@ export class AuthJwtService {
     private prisma: PrismaService,
   ) {}
 
-  /**
-   * Generate access token
-   */
   async generateAccessToken(
     userId: string,
     email: string,
@@ -71,23 +68,17 @@ export class AuthJwtService {
     });
   }
 
-  /**
-   * Generate refresh token and store in database
-   */
   async generateRefreshToken(
     userId: string,
     deviceInfo?: string,
     ipAddress?: string,
   ): Promise<string> {
-    // Generate a random token
     const token = crypto.randomBytes(32).toString('hex');
     const tokenHash = await bcrypt.hash(token, 10);
 
-    // Calculate expiry date
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + Number(REFRESH_TOKEN_EXPIRY_DAYS));
 
-    // Store refresh token in database
     try {
       await this.prisma.refreshToken.create({
         data: {
@@ -111,9 +102,6 @@ export class AuthJwtService {
     return token;
   }
 
-  /**
-   * Generate both access and refresh tokens
-   */
   async generateTokenPair(
     userId: string,
     email: string,
@@ -129,11 +117,7 @@ export class AuthJwtService {
     return { accessToken, refreshToken };
   }
 
-  /**
-   * Verify refresh token and return new token pair with user info
-   */
   async refreshTokens(refreshToken: string): Promise<RefreshTokenResult> {
-    // Find all non-revoked refresh tokens for the user
     const tokens = await this.prisma.refreshToken.findMany({
       where: {
         isRevoked: false,
@@ -146,10 +130,8 @@ export class AuthJwtService {
       },
     });
 
-    // Type for refresh token with user relation
     type RefreshTokenWithUser = (typeof tokens)[number];
 
-    // Try to match the provided token
     let matchedToken: RefreshTokenWithUser | null = null;
     for (const token of tokens) {
       const isValid = await bcrypt.compare(refreshToken, token.tokenHash);
@@ -165,7 +147,6 @@ export class AuthJwtService {
 
     const token = matchedToken;
 
-    // Revoke the old token
     try {
       await this.prisma.refreshToken.update({
         where: { id: token.id },
@@ -184,7 +165,6 @@ export class AuthJwtService {
       throw new InternalServerErrorException((error as Error).message);
     }
 
-    // Generate new token pair
     const tokenPair = await this.generateTokenPair(
       token.userId,
       token.user.email,
@@ -201,9 +181,6 @@ export class AuthJwtService {
     };
   }
 
-  /**
-   * Revoke a refresh token
-   */
   async revokeRefreshToken(refreshToken: string): Promise<void> {
     const tokens = await this.prisma.refreshToken.findMany({
       where: {
@@ -236,9 +213,6 @@ export class AuthJwtService {
     }
   }
 
-  /**
-   * Revoke all refresh tokens for a user
-   */
   async revokeAllUserTokens(userId: string): Promise<void> {
     try {
       await this.prisma.refreshToken.updateMany({
@@ -261,9 +235,6 @@ export class AuthJwtService {
     }
   }
 
-  /**
-   * Clean up expired refresh tokens (can be called by a cron job)
-   */
   async cleanupExpiredTokens(): Promise<void> {
     try {
       await this.prisma.refreshToken.deleteMany({

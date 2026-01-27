@@ -21,7 +21,6 @@ export class TaskCategoryService {
   async create(
     createDto: CreateTaskCategoryDto,
   ): Promise<ApiResponse<TaskCategoryResponseDto>> {
-    // Check if category with same name already exists
     const existing = await this.prisma.taskCategory.findUnique({
       where: { name: createDto.name },
     });
@@ -96,7 +95,6 @@ export class TaskCategoryService {
     id: string,
     updateDto: UpdateTaskCategoryDto,
   ): Promise<ApiResponse<TaskCategoryResponseDto>> {
-    // Check if category exists
     const existing = await this.prisma.taskCategory.findUnique({
       where: { id },
     });
@@ -105,7 +103,6 @@ export class TaskCategoryService {
       throw new NotFoundException(`Task category with id "${id}" is not found`);
     }
 
-    // If name is being updated, check for conflicts
     if (updateDto.name && updateDto.name !== existing.name) {
       const nameConflict = await this.prisma.taskCategory.findUnique({
         where: { name: updateDto.name },
@@ -147,7 +144,6 @@ export class TaskCategoryService {
   }
 
   async remove(id: string): Promise<ApiResponse<void>> {
-    // Check if category exists
     const existing = await this.prisma.taskCategory.findUnique({
       where: { id },
     });
