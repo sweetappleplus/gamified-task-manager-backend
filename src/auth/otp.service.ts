@@ -17,8 +17,8 @@ import {
   SMTP_PORT,
   SMTP_USER,
   SMTP_PASS,
-} from '../modules/consts/index.js';
-import { log } from '../modules/utils/index.js';
+} from '../shared/consts/index.js';
+import { log } from '../shared/utils/index.js';
 
 if (!OTP_EXPIRATION_TIME_MINUTES) {
   log({

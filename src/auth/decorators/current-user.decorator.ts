@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { CurrentUserData } from '../../modules/types/index.js';
+import { CurrentUserData } from '../../shared/types/index.js';
 
 interface RequestWithUser extends Request {
   user: CurrentUserData;

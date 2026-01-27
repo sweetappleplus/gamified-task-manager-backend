@@ -6,7 +6,7 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { LEDGER_TYPES, type LedgerType } from '../../modules/types/index.js';
+import { LEDGER_TYPES, type LedgerType } from '../../shared/types/index.js';
 
 export class CreateLedgerEntryDto {
   @IsNotEmpty()

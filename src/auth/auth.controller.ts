@@ -14,8 +14,8 @@ import {
   AuthResponseDto,
 } from './dto/index.js';
 import { Public } from './decorators/index.js';
-import { ApiResponse } from '../modules/types/index.js';
-import { API_STATUSES } from '../modules/consts/index.js';
+import { ApiResponse } from '../shared/types/index.js';
+import { API_STATUSES } from '../shared/consts/index.js';
 
 @Controller('auth')
 export class AuthController {

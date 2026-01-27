@@ -9,9 +9,9 @@ import {
   PaymentMethodResponseDto,
   UpdatePaymentMethodDto,
 } from './dto/index.js';
-import { ApiResponse, PaymentMethod } from '../modules/types/index.js';
-import { API_STATUSES, LOG_LEVELS } from '../modules/consts/index.js';
-import { log } from '../modules/utils/index.js';
+import { ApiResponse, PaymentMethod } from '../shared/types/index.js';
+import { API_STATUSES, LOG_LEVELS } from '../shared/consts/index.js';
+import { log } from '../shared/utils/index.js';
 
 @Injectable()
 export class PaymentMethodService {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { API_STATUSES } from '../modules/consts/index.js';
-import { ApiResponse } from '../modules/types/index.js';
+import { API_STATUSES } from '../shared/consts/index.js';
+import { ApiResponse } from '../shared/types/index.js';
 
 @Injectable()
 export class AppService {

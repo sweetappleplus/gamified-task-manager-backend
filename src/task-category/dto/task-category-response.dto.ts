@@ -1,4 +1,4 @@
-import type { TaskCategory } from '../../modules/types/index.js';
+import type { TaskCategory } from '../../shared/types/index.js';
 
 export class TaskCategoryResponseDto implements TaskCategory {
   id!: string;

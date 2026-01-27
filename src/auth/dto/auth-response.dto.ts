@@ -1,4 +1,4 @@
-import { User } from '../../modules/types/index.js';
+import { User } from '../../shared/types/index.js';
 
 export class AuthResponseDto {
   accessToken!: string;

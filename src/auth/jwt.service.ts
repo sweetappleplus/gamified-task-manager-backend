@@ -13,13 +13,13 @@ import {
   REFRESH_TOKEN_EXPIRY_DAYS,
   ACCESS_TOKEN_EXPIRY_MINUTES,
   LOG_LEVELS,
-} from '../modules/consts/index.js';
-import { log } from '../modules/utils/index.js';
+} from '../shared/consts/index.js';
+import { log } from '../shared/utils/index.js';
 import {
   JwtPayload,
   RefreshTokenResult,
   TokenPair,
-} from '../modules/types/index.js';
+} from '../shared/types/index.js';
 
 if (!REFRESH_TOKEN_EXPIRY_DAYS) {
   log({

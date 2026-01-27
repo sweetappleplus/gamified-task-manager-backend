@@ -1,7 +1,7 @@
 import type {
   Notification,
   NotificationType,
-} from '../../modules/types/index.js';
+} from '../../shared/types/index.js';
 
 export class NotificationResponseDto implements Notification {
   id!: string;

@@ -10,9 +10,9 @@ import {
   UserRole,
   TUserRole,
   CurrentUserData,
-} from '../../modules/types/index.js';
-import { LOG_LEVELS, ROLES_KEY } from '../../modules/consts/index.js';
-import { log } from '../../modules/utils/index.js';
+} from '../../shared/types/index.js';
+import { LOG_LEVELS, ROLES_KEY } from '../../shared/consts/index.js';
+import { log } from '../../shared/utils/index.js';
 
 interface RequestWithUser extends Request {
   user?: CurrentUserData;

@@ -16,7 +16,7 @@ import {
   ApiResponse,
   type CurrentUserData,
   UserRole,
-} from '../modules/types/index.js';
+} from '../shared/types/index.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 import { CurrentUser, Roles } from '../auth/decorators/index.js';
 

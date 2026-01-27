@@ -7,9 +7,9 @@ import {
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from '../../prisma/prisma.service.js';
-import { JwtPayload } from '../../modules/types/index.js';
-import { JWT_SECRET, LOG_LEVELS } from '../../modules/consts/index.js';
-import { log } from '../../modules/utils/index.js';
+import { JwtPayload } from '../../shared/types/index.js';
+import { JWT_SECRET, LOG_LEVELS } from '../../shared/consts/index.js';
+import { log } from '../../shared/utils/index.js';
 
 if (!JWT_SECRET) {
   log({

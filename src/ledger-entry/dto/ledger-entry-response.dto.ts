@@ -1,4 +1,4 @@
-import type { LedgerEntry, LedgerType } from '../../modules/types/index.js';
+import type { LedgerEntry, LedgerType } from '../../shared/types/index.js';
 
 export class LedgerEntryResponseDto implements LedgerEntry {
   id!: string;

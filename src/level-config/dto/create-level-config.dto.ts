@@ -7,7 +7,7 @@ import {
   IsPositive,
   IsIn,
 } from 'class-validator';
-import { TASK_TYPES, TaskType } from '../../modules/types/index.js';
+import { TASK_TYPES, TaskType } from '../../shared/types/index.js';
 
 export class CreateLevelConfigDto {
   @IsNotEmpty()

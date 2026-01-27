@@ -1,4 +1,4 @@
-import type { LevelConfig, TaskType } from '../../modules/types/index.js';
+import type { LevelConfig, TaskType } from '../../shared/types/index.js';
 
 export class LevelConfigResponseDto implements LevelConfig {
   level!: number;

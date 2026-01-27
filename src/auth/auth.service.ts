@@ -7,9 +7,9 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { OtpService } from './otp.service.js';
 import { AuthJwtService } from './jwt.service.js';
 import { AuthResponseDto } from './dto/index.js';
-import { ApiResponse } from '../modules/types/index.js';
-import { API_STATUSES, LOG_LEVELS } from '../modules/consts/index.js';
-import { log } from '../modules/utils/index.js';
+import { ApiResponse } from '../shared/types/index.js';
+import { API_STATUSES, LOG_LEVELS } from '../shared/consts/index.js';
+import { log } from '../shared/utils/index.js';
 
 @Injectable()
 export class AuthService {

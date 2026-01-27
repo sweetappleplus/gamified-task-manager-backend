@@ -1,7 +1,7 @@
 import type {
   PaymentMethod,
   PaymentMethodType,
-} from '../../modules/types/index.js';
+} from '../../shared/types/index.js';
 
 export class PaymentMethodResponseDto implements PaymentMethod {
   id!: string;

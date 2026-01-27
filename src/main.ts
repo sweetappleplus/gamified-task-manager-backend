@@ -2,8 +2,8 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app/app.module.js';
-import { LOG_LEVELS, PORT } from './modules/consts/index.js';
-import { log } from './modules/utils/index.js';
+import { LOG_LEVELS, PORT } from './shared/consts/index.js';
+import { log } from './shared/utils/index.js';
 
 if (!PORT) {
   log({
