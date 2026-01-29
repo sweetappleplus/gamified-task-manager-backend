@@ -1,7 +1,5 @@
-import type {
-  Notification,
-  NotificationType,
-} from '../../shared/types/index.js';
+import { type NotificationType } from '../../generated/prisma/enums.js';
+import type { Notification } from '../../shared/types/index.js';
 
 export class NotificationResponseDto implements Notification {
   id!: string;

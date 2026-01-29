@@ -1,14 +1,11 @@
 import {
-  IsIn,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
-import {
-  NOTIFICATION_TYPES,
-  type NotificationType,
-} from '../../shared/types/index.js';
+import { NotificationType } from '../../generated/prisma/enums.js';
 
 export class CreateNotificationDto {
   @IsNotEmpty()
@@ -16,9 +13,7 @@ export class CreateNotificationDto {
   userId!: string;
 
   @IsNotEmpty()
-  @IsIn(Object.values(NOTIFICATION_TYPES), {
-    message: `type must be one of: ${Object.values(NOTIFICATION_TYPES).join(', ')}`,
-  })
+  @IsEnum(NotificationType)
   type!: NotificationType;
 
   @IsNotEmpty()
