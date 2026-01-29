@@ -5,18 +5,13 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { EmailService } from '../email/email.service.js';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import * as nodemailer from 'nodemailer';
 import {
   OTP_EXPIRATION_TIME_MINUTES,
   OTP_ATTEMPTS_MIN_DURATION_MINUTES,
   LOG_LEVELS,
-  SMTP_FROM,
-  SMTP_HOST,
-  SMTP_PORT,
-  SMTP_USER,
-  SMTP_PASS,
 } from '../shared/consts/index.js';
 import { log } from '../shared/utils/index.js';
 
@@ -44,80 +39,17 @@ if (!OTP_ATTEMPTS_MIN_DURATION_MINUTES) {
   );
 }
 
-if (!SMTP_FROM) {
-  log({
-    message: 'SMTP_FROM is not set in the environment variables',
-    level: LOG_LEVELS.CRITICAL,
-  });
-  throw new HttpException(
-    'SMTP_FROM is not set in the environment variables',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-  );
-}
-
-if (!SMTP_HOST) {
-  log({
-    message: 'SMTP_HOST is not set in the environment variables',
-    level: LOG_LEVELS.CRITICAL,
-  });
-  throw new HttpException(
-    'SMTP_HOST is not set in the environment variables',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-  );
-}
-
-if (!SMTP_PORT) {
-  log({
-    message: 'SMTP_PORT is not set in the environment variables',
-    level: LOG_LEVELS.CRITICAL,
-  });
-  throw new HttpException(
-    'SMTP_PORT is not set in the environment variables',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-  );
-}
-
-if (!SMTP_USER) {
-  log({
-    message: 'SMTP_USER is not set in the environment variables',
-    level: LOG_LEVELS.CRITICAL,
-  });
-  throw new HttpException(
-    'SMTP_USER is not set in the environment variables',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-  );
-}
-
-if (!SMTP_PASS) {
-  log({
-    message: 'SMTP_PASS is not set in the environment variables',
-    level: LOG_LEVELS.CRITICAL,
-  });
-  throw new HttpException(
-    'SMTP_PASS is not set in the environment variables',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-  );
-}
-
 @Injectable()
 export class OtpService {
-  private transporter: nodemailer.Transporter;
   private readonly OTP_EXPIRY_MINUTES = Number(OTP_EXPIRATION_TIME_MINUTES);
   private readonly MIN_DURATION_MINUTES = Number(
     OTP_ATTEMPTS_MIN_DURATION_MINUTES,
   );
 
-  constructor(private prisma: PrismaService) {
-    this.transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: Number(SMTP_PORT),
-      secure: false,
-      auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASS,
-      },
-    });
-  }
+  constructor(
+    private prisma: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
   private generateOtp(): string {
     return crypto.randomInt(100000, 999999).toString();
@@ -132,36 +64,7 @@ export class OtpService {
   }
 
   private async sendOtpEmail(email: string, otp: string): Promise<void> {
-    const mailOptions = {
-      from: SMTP_FROM,
-      to: email,
-      subject: 'Your OTP Code',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>Your OTP Code</h2>
-          <p>Your OTP code is: <strong style="font-size: 24px; letter-spacing: 4px;">${otp}</strong></p>
-          <p>This code will expire in ${this.OTP_EXPIRY_MINUTES} minutes.</p>
-          <p>If you didn't request this code, please ignore this email.</p>
-        </div>
-      `,
-    };
-
-    try {
-      await this.transporter.sendMail(mailOptions);
-      log({
-        message: `${email} user received an OTP email`,
-        level: LOG_LEVELS.SUCCESS,
-      });
-    } catch (error) {
-      log({
-        message: `${email} user failed to receive an OTP email: ${error instanceof Error ? error.message : String(error)}`,
-        level: LOG_LEVELS.ERROR,
-      });
-      throw new HttpException(
-        'Failed to send OTP email. Please try again later or contact support.',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    await this.emailService.sendOTPEmail(email, otp);
   }
 
   async generateAndSendOtp(email: string, userId?: string): Promise<void> {

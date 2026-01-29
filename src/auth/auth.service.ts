@@ -6,10 +6,12 @@ import {
 import { PrismaService } from '../prisma/prisma.service.js';
 import { OtpService } from './otp.service.js';
 import { AuthJwtService } from './jwt.service.js';
+import { EmailService } from '../email/email.service.js';
 import { AuthResponseDto } from './dto/index.js';
 import { ApiResponse } from '../shared/types/index.js';
 import { API_STATUSES, LOG_LEVELS } from '../shared/consts/index.js';
 import { log } from '../shared/utils/index.js';
+import { UserRole, NotificationType } from '../generated/prisma/enums.js';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +19,7 @@ export class AuthService {
     private prisma: PrismaService,
     private otpService: OtpService,
     private jwtService: AuthJwtService,
+    private emailService: EmailService,
   ) {}
 
   async sendOtp(email: string): Promise<ApiResponse<void>> {
@@ -64,6 +67,31 @@ export class AuthService {
           message: `New user registered: ${email}`,
           level: LOG_LEVELS.INFO,
         });
+
+        await this.emailService.sendWelcomeEmail(email, user.name || 'User');
+
+        if (user.role === UserRole.WORKER) {
+          const admins = await this.prisma.user.findMany({
+            where: { role: UserRole.SUPER_ADMIN },
+          });
+
+          for (const admin of admins) {
+            await this.emailService.sendWorkerJoinedEmail(
+              admin.email,
+              admin.name || 'Admin',
+              email,
+            );
+
+            await this.prisma.notification.create({
+              data: {
+                userId: admin.id,
+                type: NotificationType.WORKER_JOINED,
+                title: 'New Worker Joined',
+                message: `A new worker has joined: ${email}`,
+              },
+            });
+          }
+        }
       } catch (error) {
         log({
           message: `Error creating user: ${
@@ -152,6 +180,62 @@ export class AuthService {
       status: API_STATUSES.SUCCESS,
       message: 'Logged out successfully',
       timestamp: new Date().toISOString(),
+    };
+  }
+
+  async impersonate(
+    adminId: string,
+    targetUserId: string,
+    deviceInfo?: string,
+    ipAddress?: string,
+  ): Promise<AuthResponseDto> {
+    const admin = await this.prisma.user.findUnique({
+      where: { id: adminId },
+    });
+
+    if (!admin || admin.role !== UserRole.SUPER_ADMIN) {
+      throw new UnauthorizedException(
+        'Only super admins can impersonate users',
+      );
+    }
+
+    const targetUser = await this.prisma.user.findUnique({
+      where: { id: targetUserId },
+    });
+
+    if (!targetUser) {
+      throw new UnauthorizedException(
+        `User with id "${targetUserId}" not found`,
+      );
+    }
+
+    if (!targetUser.isActive) {
+      throw new UnauthorizedException('Target user account is deactivated');
+    }
+
+    log({
+      message: `Admin ${admin.email} (${adminId}) impersonating user ${targetUser.email} (${targetUserId})`,
+      level: LOG_LEVELS.WARNING,
+    });
+
+    const { accessToken, refreshToken } =
+      await this.jwtService.generateTokenPair(
+        targetUser.id,
+        targetUser.email,
+        targetUser.role,
+        deviceInfo,
+        ipAddress,
+      );
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: targetUser.id,
+        email: targetUser.email,
+        name: targetUser.name || undefined,
+        role: targetUser.role,
+      },
     };
   }
 }
