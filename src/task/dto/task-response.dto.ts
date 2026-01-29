@@ -1,4 +1,8 @@
-import { TaskPriority, TaskType, TaskStatus } from '../../generated/prisma/enums.js';
+import {
+  TaskPriority,
+  TaskType,
+  TaskStatus,
+} from '../../generated/prisma/enums.js';
 import { Decimal } from '@prisma/client/runtime/client';
 
 export class TaskResponseDto {

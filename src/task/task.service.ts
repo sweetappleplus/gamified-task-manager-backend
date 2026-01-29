@@ -19,7 +19,11 @@ import {
 import { ApiResponse } from '../shared/types/index.js';
 import { API_STATUSES, LOG_LEVELS } from '../shared/consts/index.js';
 import { log } from '../shared/utils/index.js';
-import { TaskStatus, NotificationType, UserRole } from '../generated/prisma/enums.js';
+import {
+  TaskStatus,
+  NotificationType,
+  UserRole,
+} from '../generated/prisma/enums.js';
 import { Decimal } from '@prisma/client/runtime/client';
 
 @Injectable()
@@ -72,9 +76,13 @@ export class TaskService {
           budget: createDto.budget,
           commissionPercent: createDto.commissionPercent,
           timeToCompleteMin: createDto.timeToCompleteMin,
-          deadline: createDto.deadline ? new Date(createDto.deadline) : undefined,
+          deadline: createDto.deadline
+            ? new Date(createDto.deadline)
+            : undefined,
           maxSubmissionDelayMin: createDto.maxSubmissionDelayMin,
-          status: createDto.assignedUserId ? TaskStatus.PENDING : TaskStatus.NEW,
+          status: createDto.assignedUserId
+            ? TaskStatus.PENDING
+            : TaskStatus.NEW,
           createdById,
           assignedUserId: createDto.assignedUserId,
           categoryId: createDto.categoryId,
@@ -135,7 +143,9 @@ export class TaskService {
     }
   }
 
-  async findAll(filterDto: TaskFilterDto): Promise<ApiResponse<TaskResponseDto[]>> {
+  async findAll(
+    filterDto: TaskFilterDto,
+  ): Promise<ApiResponse<TaskResponseDto[]>> {
     const where: Record<string, unknown> = {};
 
     if (filterDto.status) {
@@ -260,7 +270,9 @@ export class TaskService {
         where: { id },
         data: {
           ...updateDto,
-          deadline: updateDto.deadline ? new Date(updateDto.deadline) : undefined,
+          deadline: updateDto.deadline
+            ? new Date(updateDto.deadline)
+            : undefined,
         },
         include: {
           category: {
@@ -451,7 +463,10 @@ export class TaskService {
     }
   }
 
-  async startTask(id: string, userId: string): Promise<ApiResponse<TaskResponseDto>> {
+  async startTask(
+    id: string,
+    userId: string,
+  ): Promise<ApiResponse<TaskResponseDto>> {
     const task = await this.prisma.task.findUnique({
       where: { id },
     });
@@ -465,7 +480,9 @@ export class TaskService {
     }
 
     if (task.status !== TaskStatus.PENDING) {
-      throw new BadRequestException('Task can only be started when status is PENDING');
+      throw new BadRequestException(
+        'Task can only be started when status is PENDING',
+      );
     }
 
     try {
@@ -538,7 +555,10 @@ export class TaskService {
       throw new ForbiddenException('You can only submit tasks assigned to you');
     }
 
-    if (task.status !== TaskStatus.IN_ACTION && task.status !== TaskStatus.FAILED) {
+    if (
+      task.status !== TaskStatus.IN_ACTION &&
+      task.status !== TaskStatus.FAILED
+    ) {
       throw new BadRequestException(
         'Task can only be submitted when status is IN_ACTION or FAILED',
       );
@@ -647,7 +667,10 @@ export class TaskService {
       throw new NotFoundException(`Task with id "${id}" is not found`);
     }
 
-    if (task.status !== TaskStatus.IN_REVIEW && task.status !== TaskStatus.LATE) {
+    if (
+      task.status !== TaskStatus.IN_REVIEW &&
+      task.status !== TaskStatus.LATE
+    ) {
       throw new BadRequestException(
         'Task can only be reviewed when status is IN_REVIEW or LATE',
       );

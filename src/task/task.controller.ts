@@ -58,7 +58,9 @@ export class TaskController {
   @Roles(UserRole.SUPER_ADMIN, UserRole.WORKER)
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async findOne(@Param('id') id: string): Promise<ApiResponse<TaskResponseDto>> {
+  async findOne(
+    @Param('id') id: string,
+  ): Promise<ApiResponse<TaskResponseDto>> {
     return this.taskService.findOne(id);
   }
 
