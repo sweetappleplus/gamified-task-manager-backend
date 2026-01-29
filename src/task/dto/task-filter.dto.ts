@@ -1,4 +1,4 @@
-import { IsOptional, IsEnum, IsString } from 'class-validator';
+import { IsOptional, IsEnum, IsString, IsDateString } from 'class-validator';
 import {
   TaskStatus,
   TaskPriority,
@@ -29,4 +29,24 @@ export class TaskFilterDto {
   @IsOptional()
   @IsString()
   createdById?: string;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @IsOptional()
+  @IsDateString()
+  deadlineFrom?: string;
+
+  @IsOptional()
+  @IsDateString()
+  deadlineTo?: string;
+
+  @IsOptional()
+  @IsDateString()
+  createdFrom?: string;
+
+  @IsOptional()
+  @IsDateString()
+  createdTo?: string;
 }

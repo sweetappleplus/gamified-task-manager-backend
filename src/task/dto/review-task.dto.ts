@@ -8,4 +8,8 @@ export class ReviewTaskDto {
   @IsOptional()
   @IsString()
   feedback?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  returnToInAction?: boolean;
 }

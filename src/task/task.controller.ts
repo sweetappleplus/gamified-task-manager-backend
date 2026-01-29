@@ -20,6 +20,8 @@ import {
   ReviewTaskDto,
   TaskFilterDto,
   TaskResponseDto,
+  BulkCreateTasksDto,
+  BulkAssignTasksDto,
 } from './dto/index.js';
 import { Roles, CurrentUser } from '../auth/decorators/index.js';
 import { ApiResponse } from '../shared/types/index.js';
@@ -121,5 +123,42 @@ export class TaskController {
     @CurrentUser() user: CurrentUserData,
   ): Promise<ApiResponse<TaskResponseDto>> {
     return this.taskService.reviewTask(id, reviewTaskDto, user.userId);
+  }
+
+  @Roles(UserRole.SUPER_ADMIN)
+  @Post(':id/mark-paid')
+  @HttpCode(HttpStatus.OK)
+  async markAsPaid(
+    @Param('id') id: string,
+  ): Promise<ApiResponse<TaskResponseDto>> {
+    return this.taskService.markAsPaid(id);
+  }
+
+  @Roles(UserRole.SUPER_ADMIN)
+  @Get('admin/payments')
+  @HttpCode(HttpStatus.OK)
+  async getPaymentsDashboard(
+    @Query('status') status?: 'pending' | 'paid',
+  ): Promise<ApiResponse<TaskResponseDto[]>> {
+    return this.taskService.getPaymentsDashboard(status);
+  }
+
+  @Roles(UserRole.SUPER_ADMIN)
+  @Post('bulk-create')
+  @HttpCode(HttpStatus.CREATED)
+  async bulkCreate(
+    @Body() bulkCreateDto: BulkCreateTasksDto,
+    @CurrentUser() user: CurrentUserData,
+  ): Promise<ApiResponse<TaskResponseDto[]>> {
+    return this.taskService.bulkCreateTasks(bulkCreateDto, user.userId);
+  }
+
+  @Roles(UserRole.SUPER_ADMIN)
+  @Post('bulk-assign')
+  @HttpCode(HttpStatus.OK)
+  async bulkAssign(
+    @Body() bulkAssignDto: BulkAssignTasksDto,
+  ): Promise<ApiResponse<{ assignedCount: number }>> {
+    return this.taskService.bulkAssignTasks(bulkAssignDto);
   }
 }

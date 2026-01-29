@@ -5,3 +5,5 @@ export { SubmitTaskDto } from './submit-task.dto.js';
 export { ReviewTaskDto } from './review-task.dto.js';
 export { TaskFilterDto } from './task-filter.dto.js';
 export { TaskResponseDto } from './task-response.dto.js';
+export { BulkCreateTasksDto } from './bulk-create-tasks.dto.js';
+export { BulkAssignTasksDto } from './bulk-assign-tasks.dto.js';

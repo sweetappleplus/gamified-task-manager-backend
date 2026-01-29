@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { NotificationService } from '../notification/notification.service.js';
+import { EmailService } from '../email/email.service.js';
 import {
   CreateTaskDto,
   UpdateTaskDto,
@@ -15,6 +16,8 @@ import {
   ReviewTaskDto,
   TaskFilterDto,
   TaskResponseDto,
+  BulkCreateTasksDto,
+  BulkAssignTasksDto,
 } from './dto/index.js';
 import { ApiResponse } from '../shared/types/index.js';
 import { API_STATUSES, LOG_LEVELS } from '../shared/consts/index.js';
@@ -31,6 +34,7 @@ export class TaskService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(
@@ -116,7 +120,7 @@ export class TaskService {
         level: LOG_LEVELS.INFO,
       });
 
-      if (createDto.assignedUserId) {
+      if (createDto.assignedUserId && task.assignedTo) {
         await this.notificationService.create({
           userId: createDto.assignedUserId,
           type: NotificationType.TASK_ASSIGNED,
@@ -124,6 +128,14 @@ export class TaskService {
           message: `You have been assigned a new task: ${task.title}`,
           relatedTaskId: task.id,
         });
+
+        await this.emailService.sendTaskAssignedEmail(
+          task.assignedTo.email,
+          task.assignedTo.name || 'Worker',
+          task.title,
+          task.id,
+          task.deadline || undefined,
+        );
       }
 
       return {
@@ -165,6 +177,31 @@ export class TaskService {
     }
     if (filterDto.createdById) {
       where.createdById = filterDto.createdById;
+    }
+
+    if (filterDto.search) {
+      where.OR = [
+        { title: { contains: filterDto.search, mode: 'insensitive' } },
+        { description: { contains: filterDto.search, mode: 'insensitive' } },
+      ];
+    }
+
+    if (filterDto.deadlineFrom || filterDto.deadlineTo) {
+      where.deadline = {
+        gte: filterDto.deadlineFrom
+          ? new Date(filterDto.deadlineFrom)
+          : undefined,
+        lte: filterDto.deadlineTo ? new Date(filterDto.deadlineTo) : undefined,
+      };
+    }
+
+    if (filterDto.createdFrom || filterDto.createdTo) {
+      where.createdAt = {
+        gte: filterDto.createdFrom
+          ? new Date(filterDto.createdFrom)
+          : undefined,
+        lte: filterDto.createdTo ? new Date(filterDto.createdTo) : undefined,
+      };
     }
 
     const tasks = await this.prisma.task.findMany({
@@ -446,6 +483,16 @@ export class TaskService {
         relatedTaskId: updated.id,
       });
 
+      if (updated.assignedTo) {
+        await this.emailService.sendTaskAssignedEmail(
+          updated.assignedTo.email,
+          updated.assignedTo.name || 'Worker',
+          updated.title,
+          updated.id,
+          updated.deadline || undefined,
+        );
+      }
+
       return {
         status: API_STATUSES.SUCCESS,
         message: 'Task assigned successfully',
@@ -634,6 +681,20 @@ export class TaskService {
         relatedTaskId: updated.id,
       });
 
+      const adminUser = await this.prisma.user.findUnique({
+        where: { id: task.createdById },
+      });
+
+      if (adminUser && updated.assignedTo) {
+        await this.emailService.sendTaskSubmittedEmail(
+          adminUser.email,
+          adminUser.name || 'Admin',
+          updated.title,
+          updated.assignedTo.name || 'Worker',
+          updated.id,
+        );
+      }
+
       return {
         status: API_STATUSES.SUCCESS,
         message: 'Task submitted successfully',
@@ -709,6 +770,38 @@ export class TaskService {
           },
         });
 
+        if (task.startedAt && task.submittedAt) {
+          const timeSpentMinutes = Math.floor(
+            (task.submittedAt.getTime() - task.startedAt.getTime()) /
+              (1000 * 60),
+          );
+
+          if (timeSpentMinutes < task.timeToCompleteMin) {
+            const bonusConfig = await this.prisma.bonusConfig.findUnique({
+              where: { TaskType: task.type },
+            });
+
+            if (bonusConfig && bonusConfig.bonusPercent.greaterThan(0)) {
+              const bonusAmount = reward.mul(bonusConfig.bonusPercent).div(100);
+
+              await this.prisma.ledgerEntry.create({
+                data: {
+                  userId: task.assignedUserId!,
+                  type: 'BONUS',
+                  amount: bonusAmount,
+                  description: `Time bonus for completing task "${task.title}" ahead of schedule (${timeSpentMinutes}/${task.timeToCompleteMin} min)`,
+                  relatedTaskId: task.id,
+                },
+              });
+
+              log({
+                message: `Time bonus applied: ${bonusAmount.toString()} for task ${task.title}`,
+                level: LOG_LEVELS.INFO,
+              });
+            }
+          }
+        }
+
         const updated = await this.prisma.task.update({
           where: { id },
           data: {
@@ -752,6 +845,15 @@ export class TaskService {
           relatedTaskId: updated.id,
         });
 
+        if (task.assignedTo) {
+          await this.emailService.sendTaskApprovedEmail(
+            task.assignedTo.email,
+            task.assignedTo.name || 'Worker',
+            updated.title,
+            reward.toString(),
+          );
+        }
+
         return {
           status: API_STATUSES.SUCCESS,
           message: 'Task approved successfully',
@@ -759,10 +861,14 @@ export class TaskService {
           timestamp: new Date().toISOString(),
         };
       } else {
+        const newStatus = reviewDto.returnToInAction
+          ? TaskStatus.IN_ACTION
+          : TaskStatus.FAILED;
+
         const updated = await this.prisma.task.update({
           where: { id },
           data: {
-            status: TaskStatus.FAILED,
+            status: newStatus,
           },
           include: {
             category: {
@@ -788,22 +894,41 @@ export class TaskService {
           },
         });
 
+        const actionMessage = reviewDto.returnToInAction
+          ? 'returned to in-progress for corrections'
+          : 'rejected';
+
         log({
-          message: `Task rejected: ${updated.title}`,
+          message: `Task ${actionMessage}: ${updated.title}`,
           level: LOG_LEVELS.INFO,
         });
 
         await this.notificationService.create({
           userId: task.assignedUserId!,
           type: NotificationType.TASK_REJECTED,
-          title: 'Task Rejected',
-          message: `Your task "${updated.title}" has been rejected. Please review the feedback and resubmit.`,
+          title: reviewDto.returnToInAction
+            ? 'Task Needs Corrections'
+            : 'Task Rejected',
+          message: reviewDto.returnToInAction
+            ? `Your task "${updated.title}" needs some corrections. Please review the feedback and resubmit.`
+            : `Your task "${updated.title}" has been rejected. Please review the feedback.`,
           relatedTaskId: updated.id,
         });
 
+        if (task.assignedTo) {
+          await this.emailService.sendTaskRejectedEmail(
+            task.assignedTo.email,
+            task.assignedTo.name || 'Worker',
+            updated.title,
+            reviewDto.feedback || 'Please review and resubmit your work.',
+          );
+        }
+
         return {
           status: API_STATUSES.SUCCESS,
-          message: 'Task rejected, worker can resubmit',
+          message: reviewDto.returnToInAction
+            ? 'Task returned to in-progress for corrections'
+            : 'Task rejected',
           data: updated,
           timestamp: new Date().toISOString(),
         };
@@ -811,6 +936,333 @@ export class TaskService {
     } catch (error) {
       log({
         message: `Error reviewing task: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
+  }
+
+  async markAsPaid(id: string): Promise<ApiResponse<TaskResponseDto>> {
+    const task = await this.prisma.task.findUnique({
+      where: { id },
+      include: {
+        assignedTo: true,
+      },
+    });
+
+    if (!task) {
+      throw new NotFoundException(`Task with id "${id}" is not found`);
+    }
+
+    if (task.status !== TaskStatus.COMPLETED) {
+      throw new BadRequestException(
+        'Only tasks with status COMPLETED can be marked as PAID',
+      );
+    }
+
+    if (!task.assignedUserId) {
+      throw new BadRequestException('Task must have an assigned worker');
+    }
+
+    const taskRewardLedger = await this.prisma.ledgerEntry.findFirst({
+      where: {
+        relatedTaskId: id,
+        type: 'TASK_REWARD',
+        userId: task.assignedUserId,
+      },
+    });
+
+    const bonusLedger = await this.prisma.ledgerEntry.findFirst({
+      where: {
+        relatedTaskId: id,
+        type: 'BONUS',
+        userId: task.assignedUserId,
+      },
+    });
+
+    const totalAmount = new Decimal(taskRewardLedger?.amount || 0).add(
+      bonusLedger?.amount || 0,
+    );
+
+    try {
+      const updated = await this.prisma.task.update({
+        where: { id },
+        data: {
+          status: TaskStatus.PAID,
+        },
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          assignedTo: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+            },
+          },
+          createdBy: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      log({
+        message: `Task marked as PAID: ${updated.title}, amount: ${totalAmount.toString()}`,
+        level: LOG_LEVELS.INFO,
+      });
+
+      await this.notificationService.create({
+        userId: task.assignedUserId,
+        type: NotificationType.PAYMENT_RECORDED,
+        title: 'Payment Recorded',
+        message: `Payment of $${totalAmount.toString()} for task "${updated.title}" has been recorded`,
+        relatedTaskId: updated.id,
+      });
+
+      if (task.assignedTo) {
+        await this.emailService.sendPaymentRecordedEmail(
+          task.assignedTo.email,
+          task.assignedTo.name || 'Worker',
+          totalAmount.toString(),
+          updated.title,
+        );
+      }
+
+      return {
+        status: API_STATUSES.SUCCESS,
+        message: 'Task marked as paid successfully',
+        data: updated,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      log({
+        message: `Error marking task as paid: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
+  }
+
+  async getPaymentsDashboard(
+    status?: 'pending' | 'paid',
+  ): Promise<ApiResponse<TaskResponseDto[]>> {
+    const statusFilter =
+      status === 'paid' ? TaskStatus.PAID : TaskStatus.COMPLETED;
+
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        status: statusFilter,
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        assignedTo: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+        createdBy: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: { completedAt: 'desc' },
+    });
+
+    return {
+      status: API_STATUSES.SUCCESS,
+      message: `${status === 'paid' ? 'Paid' : 'Pending'} payments retrieved successfully`,
+      data: tasks,
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  async bulkCreateTasks(
+    bulkDto: BulkCreateTasksDto,
+    createdById: string,
+  ): Promise<ApiResponse<TaskResponseDto[]>> {
+    const category = await this.prisma.taskCategory.findUnique({
+      where: { id: bulkDto.categoryId },
+    });
+
+    if (!category) {
+      throw new NotFoundException(
+        `Task category with id "${bulkDto.categoryId}" is not found`,
+      );
+    }
+
+    const tasksData = Array.from({ length: bulkDto.numberOfTasks }, (_, i) => ({
+      title: bulkDto.title || `Task ${i + 1}`,
+      description: bulkDto.description || '',
+      steps: bulkDto.steps || '',
+      priority: bulkDto.priority || 'MEDIUM',
+      type: bulkDto.type || 'STANDARD',
+      budget: new Decimal(bulkDto.budget),
+      commissionPercent: new Decimal(bulkDto.commissionPercent),
+      timeToCompleteMin: bulkDto.timeToCompleteMin,
+      deadline: bulkDto.deadline ? new Date(bulkDto.deadline) : null,
+      maxSubmissionDelayMin: bulkDto.maxSubmissionDelayMin || 0,
+      status: TaskStatus.NEW,
+      createdById,
+      categoryId: bulkDto.categoryId,
+    }));
+
+    try {
+      const createdTasks = await this.prisma.$transaction(
+        tasksData.map((taskData) =>
+          this.prisma.task.create({
+            data: taskData,
+            include: {
+              category: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+              assignedTo: {
+                select: {
+                  id: true,
+                  email: true,
+                  name: true,
+                },
+              },
+              createdBy: {
+                select: {
+                  id: true,
+                  email: true,
+                  name: true,
+                },
+              },
+            },
+          }),
+        ),
+      );
+
+      log({
+        message: `Bulk created ${createdTasks.length} tasks by user ${createdById}`,
+        level: LOG_LEVELS.INFO,
+      });
+
+      return {
+        status: API_STATUSES.SUCCESS,
+        message: `Successfully created ${createdTasks.length} tasks`,
+        data: createdTasks,
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      log({
+        message: `Error bulk creating tasks: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        level: LOG_LEVELS.ERROR,
+      });
+      throw new InternalServerErrorException((error as Error).message);
+    }
+  }
+
+  async bulkAssignTasks(
+    bulkAssignDto: BulkAssignTasksDto,
+  ): Promise<ApiResponse<{ assignedCount: number }>> {
+    const tasks = await this.prisma.task.findMany({
+      where: { id: { in: bulkAssignDto.taskIds } },
+    });
+
+    if (tasks.length !== bulkAssignDto.taskIds.length) {
+      throw new NotFoundException('One or more tasks not found');
+    }
+
+    const invalidTasks = tasks.filter(
+      (task) =>
+        task.status !== TaskStatus.NEW &&
+        task.status !== TaskStatus.PENDING &&
+        task.status !== TaskStatus.CANCELLED,
+    );
+
+    if (invalidTasks.length > 0) {
+      throw new BadRequestException(
+        `Tasks can only be assigned when status is NEW, PENDING, or CANCELLED. Invalid task IDs: ${invalidTasks.map((t) => t.id).join(', ')}`,
+      );
+    }
+
+    const workers = await this.prisma.user.findMany({
+      where: {
+        id: { in: bulkAssignDto.workerIds },
+        role: UserRole.WORKER,
+      },
+    });
+
+    if (workers.length !== bulkAssignDto.workerIds.length) {
+      throw new NotFoundException('One or more workers not found');
+    }
+
+    try {
+      let assignedCount = 0;
+
+      for (const task of tasks) {
+        for (const worker of workers) {
+          await this.prisma.task.update({
+            where: { id: task.id },
+            data: {
+              assignedUserId: worker.id,
+              status: TaskStatus.PENDING,
+            },
+          });
+
+          await this.notificationService.create({
+            userId: worker.id,
+            type: NotificationType.TASK_ASSIGNED,
+            title: 'New Task Assigned',
+            message: `You have been assigned a new task: ${task.title}`,
+            relatedTaskId: task.id,
+          });
+
+          await this.emailService.sendTaskAssignedEmail(
+            worker.email,
+            worker.name || 'Worker',
+            task.title,
+            task.id,
+            task.deadline || undefined,
+          );
+
+          assignedCount++;
+        }
+      }
+
+      log({
+        message: `Bulk assigned ${bulkAssignDto.taskIds.length} tasks to ${bulkAssignDto.workerIds.length} workers (${assignedCount} total assignments)`,
+        level: LOG_LEVELS.INFO,
+      });
+
+      return {
+        status: API_STATUSES.SUCCESS,
+        message: `Successfully assigned ${bulkAssignDto.taskIds.length} tasks to ${bulkAssignDto.workerIds.length} workers`,
+        data: { assignedCount },
+        timestamp: new Date().toISOString(),
+      };
+    } catch (error) {
+      log({
+        message: `Error bulk assigning tasks: ${
           error instanceof Error ? error.message : String(error)
         }`,
         level: LOG_LEVELS.ERROR,
