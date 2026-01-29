@@ -1,7 +1,5 @@
-import type {
-  PaymentMethod,
-  PaymentMethodType,
-} from '../../shared/types/index.js';
+import { type PaymentMethodType } from '../../generated/prisma/enums.js';
+import type { PaymentMethod } from '../../shared/types/index.js';
 
 export class PaymentMethodResponseDto implements PaymentMethod {
   id!: string;

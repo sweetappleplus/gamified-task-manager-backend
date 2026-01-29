@@ -6,14 +6,11 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import {
-  PAYMENT_METHOD_TYPES,
-  type PaymentMethodType,
-} from '../../shared/types/index.js';
+import { PaymentMethodType } from '../../generated/prisma/enums.js';
 
 export class CreatePaymentMethodDto {
   @IsNotEmpty()
-  @IsEnum(Object.values(PAYMENT_METHOD_TYPES))
+  @IsEnum(PaymentMethodType)
   type!: PaymentMethodType;
 
   @IsOptional()
