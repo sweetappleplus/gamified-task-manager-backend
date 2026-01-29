@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { HttpException, HttpStatus, ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 import { AppModule } from './app/app.module.js';
 import { LOG_LEVELS, PORT } from './shared/consts/index.js';
 import { log } from './shared/utils/index.js';
@@ -17,7 +19,7 @@ if (!PORT) {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors();
 
@@ -28,6 +30,11 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // Serve static files
+  app.useStaticAssets(join(process.cwd(), 'uploads'), {
+    prefix: '/uploads/',
+  });
 
   await app.listen(Number(PORT));
   log({
