@@ -57,8 +57,9 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 /src/generated/prisma
 
-# Cursor rules
+# AI IDE rules
 .cursorrules
+CLAUDE.md
 
 # Uploads
 /uploads
