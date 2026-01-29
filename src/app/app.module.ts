@@ -12,6 +12,7 @@ import { BonusConfigModule } from '../bonus-config/bonus-config.module.js';
 import { NotificationModule } from '../notification/notification.module.js';
 import { LedgerEntryModule } from '../ledger-entry/ledger-entry.module.js';
 import { UserModule } from '../user/user.module.js';
+import { TaskModule } from '../task/task.module.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 
 @Module({
@@ -25,6 +26,7 @@ import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
     NotificationModule,
     LedgerEntryModule,
     UserModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [
