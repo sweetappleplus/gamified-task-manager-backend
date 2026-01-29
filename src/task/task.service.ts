@@ -187,21 +187,25 @@ export class TaskService {
     }
 
     if (filterDto.deadlineFrom || filterDto.deadlineTo) {
-      where.deadline = {
-        gte: filterDto.deadlineFrom
-          ? new Date(filterDto.deadlineFrom)
-          : undefined,
-        lte: filterDto.deadlineTo ? new Date(filterDto.deadlineTo) : undefined,
-      };
+      const deadlineFilter: Record<string, Date> = {};
+      if (filterDto.deadlineFrom) {
+        deadlineFilter.gte = new Date(filterDto.deadlineFrom);
+      }
+      if (filterDto.deadlineTo) {
+        deadlineFilter.lte = new Date(filterDto.deadlineTo);
+      }
+      where.deadline = deadlineFilter;
     }
 
     if (filterDto.createdFrom || filterDto.createdTo) {
-      where.createdAt = {
-        gte: filterDto.createdFrom
-          ? new Date(filterDto.createdFrom)
-          : undefined,
-        lte: filterDto.createdTo ? new Date(filterDto.createdTo) : undefined,
-      };
+      const createdAtFilter: Record<string, Date> = {};
+      if (filterDto.createdFrom) {
+        createdAtFilter.gte = new Date(filterDto.createdFrom);
+      }
+      if (filterDto.createdTo) {
+        createdAtFilter.lte = new Date(filterDto.createdTo);
+      }
+      where.createdAt = createdAtFilter;
     }
 
     const tasks = await this.prisma.task.findMany({

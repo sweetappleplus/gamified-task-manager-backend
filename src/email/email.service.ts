@@ -44,6 +44,7 @@ export class EmailService {
 
   async sendEmail(options: EmailOptions): Promise<void> {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const info = await this.transporter.sendMail({
         from: process.env.SMTP_FROM || process.env.SMTP_USER,
         to: options.to,
@@ -53,7 +54,8 @@ export class EmailService {
       });
 
       log({
-        message: `Email sent successfully to ${options.to}: ${info.messageId}`,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        message: `Email sent successfully to ${options.to}: ${String(info.messageId)}`,
         level: LOG_LEVELS.SUCCESS,
       });
     } catch (error) {
