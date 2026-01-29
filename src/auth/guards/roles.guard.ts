@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { USER_ROLES, CurrentUserData } from '../../shared/types/index.js';
+import { CurrentUserData } from '../../shared/types/index.js';
 import { LOG_LEVELS, ROLES_KEY } from '../../shared/consts/index.js';
 import { log } from '../../shared/utils/index.js';
 import { UserRole } from '../../generated/prisma/enums.js';
@@ -41,7 +41,7 @@ export class RolesGuard implements CanActivate {
       throw new UnauthorizedException('Access is unauthorized');
     }
 
-    if (user.role === USER_ROLES.SUPER_ADMIN) {
+    if (user.role === UserRole.SUPER_ADMIN) {
       return true;
     }
 

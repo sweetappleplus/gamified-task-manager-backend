@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateLedgerEntryDto, LedgerEntryResponseDto } from './dto/index.js';
-import { ApiResponse, LEDGER_TYPES } from '../shared/types/index.js';
+import { ApiResponse } from '../shared/types/index.js';
 import { API_STATUSES, LOG_LEVELS } from '../shared/consts/index.js';
 import { log } from '../shared/utils/index.js';
 import { LedgerType } from '../generated/prisma/enums.js';
@@ -153,18 +153,18 @@ export class LedgerEntryService {
     entries.forEach((entry) => {
       const amount = Number(entry._sum.amount || 0);
       switch (entry.type) {
-        case LEDGER_TYPES.TASK_REWARD:
+        case LedgerType.TASK_REWARD:
           summary.totalEarnings = summary.totalEarnings.plus(Decimal(amount));
           break;
-        case LEDGER_TYPES.WITHDRAWAL:
+        case LedgerType.WITHDRAWAL:
           summary.totalWithdrawals = summary.totalWithdrawals.plus(
             Decimal(Math.abs(amount)),
           );
           break;
-        case LEDGER_TYPES.BONUS:
+        case LedgerType.BONUS:
           summary.totalBonuses = summary.totalBonuses.plus(Decimal(amount));
           break;
-        case LEDGER_TYPES.ADJUSTMENT:
+        case LedgerType.ADJUSTMENT:
           summary.totalAdjustments = summary.totalAdjustments.plus(
             Decimal(amount),
           );
