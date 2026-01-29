@@ -1,7 +1,9 @@
+import { UserRole } from '../../generated/prisma/enums.js';
+
 export interface JwtPayload {
   id: string;
   email: string;
-  role: string;
+  role: UserRole;
 }
 
 export interface TokenPair {
@@ -12,5 +14,5 @@ export interface TokenPair {
 export interface RefreshTokenResult extends TokenPair {
   userId: string;
   email: string;
-  role: string;
+  role: UserRole;
 }

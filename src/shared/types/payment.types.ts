@@ -1,3 +1,6 @@
+import { Decimal } from '@prisma/client/runtime/client';
+import { LedgerType, PaymentMethodType } from '../../generated/prisma/enums.js';
+
 export const PAYMENT_METHOD_TYPES = {
   BANK_ACCOUNT: 'BANK_ACCOUNT',
   PAYPAL: 'PAYPAL',
@@ -5,17 +8,12 @@ export const PAYMENT_METHOD_TYPES = {
   CARD: 'CARD',
 } as const;
 
-export type PaymentMethodType =
-  (typeof PAYMENT_METHOD_TYPES)[keyof typeof PAYMENT_METHOD_TYPES];
-
 export const LEDGER_TYPES = {
   TASK_REWARD: 'TASK_REWARD',
   BONUS: 'BONUS',
   ADJUSTMENT: 'ADJUSTMENT',
   WITHDRAWAL: 'WITHDRAWAL',
 } as const;
-
-export type LedgerType = (typeof LEDGER_TYPES)[keyof typeof LEDGER_TYPES];
 
 export interface PaymentMethod {
   id: string;
@@ -32,7 +30,7 @@ export interface LedgerEntry {
   id: string;
   userId: string;
   type: LedgerType;
-  amount: number;
+  amount: Decimal;
   description?: string | null;
   relatedTaskId?: string | null;
   createdAt: Date;

@@ -1,3 +1,5 @@
+import { NotificationType } from '../../generated/prisma/enums.js';
+
 export const NOTIFICATION_TYPES = {
   TASK_ASSIGNED: 'TASK_ASSIGNED',
   TASK_APPROVED: 'TASK_APPROVED',
@@ -6,9 +8,6 @@ export const NOTIFICATION_TYPES = {
   WORKER_JOINED: 'WORKER_JOINED',
   TASK_SUBMITTED: 'TASK_SUBMITTED',
 } as const;
-
-export type NotificationType =
-  (typeof NOTIFICATION_TYPES)[keyof typeof NOTIFICATION_TYPES];
 
 export interface Notification {
   id: string;

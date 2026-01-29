@@ -8,7 +8,8 @@ import { CreateLedgerEntryDto, LedgerEntryResponseDto } from './dto/index.js';
 import { ApiResponse, LEDGER_TYPES } from '../shared/types/index.js';
 import { API_STATUSES, LOG_LEVELS } from '../shared/consts/index.js';
 import { log } from '../shared/utils/index.js';
-import { LedgerType } from '../shared/types/index.js';
+import { LedgerType } from '../generated/prisma/enums.js';
+import { Decimal } from '@prisma/client/runtime/client';
 
 @Injectable()
 export class LedgerEntryService {
@@ -36,7 +37,7 @@ export class LedgerEntryService {
       return {
         status: API_STATUSES.SUCCESS,
         message: 'Ledger entry created successfully',
-        data: { ...ledgerEntry, amount: Number(ledgerEntry.amount) },
+        data: ledgerEntry,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -67,10 +68,7 @@ export class LedgerEntryService {
     return {
       status: API_STATUSES.SUCCESS,
       message: 'Ledger entries retrieved successfully',
-      data: ledgerEntries.map((entry) => ({
-        ...entry,
-        amount: Number(entry.amount),
-      })),
+      data: ledgerEntries,
       timestamp: new Date().toISOString(),
     };
   }
@@ -92,14 +90,14 @@ export class LedgerEntryService {
     return {
       status: API_STATUSES.SUCCESS,
       message: 'Ledger entry retrieved successfully',
-      data: { ...ledgerEntry, amount: Number(ledgerEntry.amount) },
+      data: ledgerEntry,
       timestamp: new Date().toISOString(),
     };
   }
 
   async getBalanceForUser(
     userId: string,
-  ): Promise<ApiResponse<{ balance: number }>> {
+  ): Promise<ApiResponse<{ balance: Decimal }>> {
     const result = await this.prisma.ledgerEntry.groupBy({
       by: ['userId'],
       where: { userId },
@@ -108,23 +106,23 @@ export class LedgerEntryService {
       },
     });
 
-    const balance = result[0]?._sum.amount || 0;
+    const balance = Decimal(result[0]?._sum.amount || 0);
 
     return {
       status: API_STATUSES.SUCCESS,
       message: 'Balance retrieved successfully',
-      data: { balance: Number(balance) },
+      data: { balance: balance },
       timestamp: new Date().toISOString(),
     };
   }
 
   async getSummaryForUser(userId: string): Promise<
     ApiResponse<{
-      totalEarnings: number;
-      totalWithdrawals: number;
-      totalBonuses: number;
-      totalAdjustments: number;
-      balance: number;
+      totalEarnings: Decimal;
+      totalWithdrawals: Decimal;
+      totalBonuses: Decimal;
+      totalAdjustments: Decimal;
+      balance: Decimal;
     }>
   > {
     const [entries, balanceResult] = await Promise.all([
@@ -145,27 +143,31 @@ export class LedgerEntryService {
     ]);
 
     const summary = {
-      totalEarnings: 0,
-      totalWithdrawals: 0,
-      totalBonuses: 0,
-      totalAdjustments: 0,
-      balance: Number(balanceResult[0]?._sum.amount || 0),
+      totalEarnings: Decimal(0),
+      totalWithdrawals: Decimal(0),
+      totalBonuses: Decimal(0),
+      totalAdjustments: Decimal(0),
+      balance: Decimal(balanceResult[0]?._sum.amount || 0),
     };
 
     entries.forEach((entry) => {
       const amount = Number(entry._sum.amount || 0);
       switch (entry.type) {
         case LEDGER_TYPES.TASK_REWARD:
-          summary.totalEarnings += amount;
+          summary.totalEarnings = summary.totalEarnings.plus(Decimal(amount));
           break;
         case LEDGER_TYPES.WITHDRAWAL:
-          summary.totalWithdrawals += Math.abs(amount);
+          summary.totalWithdrawals = summary.totalWithdrawals.plus(
+            Decimal(Math.abs(amount)),
+          );
           break;
         case LEDGER_TYPES.BONUS:
-          summary.totalBonuses += amount;
+          summary.totalBonuses = summary.totalBonuses.plus(Decimal(amount));
           break;
         case LEDGER_TYPES.ADJUSTMENT:
-          summary.totalAdjustments += amount;
+          summary.totalAdjustments = summary.totalAdjustments.plus(
+            Decimal(amount),
+          );
           break;
       }
     });

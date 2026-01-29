@@ -10,9 +10,10 @@ import {
   BonusConfigResponseDto,
   UpdateBonusConfigDto,
 } from './dto/index.js';
-import { ApiResponse, type TaskType } from '../shared/types/index.js';
+import { ApiResponse } from '../shared/types/index.js';
 import { API_STATUSES, LOG_LEVELS } from '../shared/consts/index.js';
 import { log } from '../shared/utils/index.js';
+import { TaskType } from '../generated/prisma/enums.js';
 
 @Injectable()
 export class BonusConfigService {
@@ -59,10 +60,7 @@ export class BonusConfigService {
       return {
         status: API_STATUSES.SUCCESS,
         message: 'Bonus config created successfully',
-        data: {
-          ...bonusConfig,
-          bonusPercent: Number(bonusConfig.bonusPercent),
-        },
+        data: bonusConfig,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -84,10 +82,7 @@ export class BonusConfigService {
     return {
       status: API_STATUSES.SUCCESS,
       message: 'Bonus configs retrieved successfully',
-      data: bonusConfigs.map((config) => ({
-        ...config,
-        bonusPercent: Number(config.bonusPercent),
-      })),
+      data: bonusConfigs,
       timestamp: new Date().toISOString(),
     };
   }
@@ -104,10 +99,7 @@ export class BonusConfigService {
     return {
       status: API_STATUSES.SUCCESS,
       message: 'Bonus config retrieved successfully',
-      data: {
-        ...bonusConfig,
-        bonusPercent: Number(bonusConfig.bonusPercent),
-      },
+      data: bonusConfig,
       timestamp: new Date().toISOString(),
     };
   }
@@ -128,10 +120,7 @@ export class BonusConfigService {
     return {
       status: API_STATUSES.SUCCESS,
       message: 'Bonus config retrieved successfully',
-      data: {
-        ...bonusConfig,
-        bonusPercent: Number(bonusConfig.bonusPercent),
-      },
+      data: bonusConfig,
       timestamp: new Date().toISOString(),
     };
   }
@@ -203,10 +192,7 @@ export class BonusConfigService {
       return {
         status: API_STATUSES.SUCCESS,
         message: 'Bonus config updated successfully',
-        data: {
-          ...updated,
-          bonusPercent: Number(updated.bonusPercent),
-        },
+        data: updated,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {

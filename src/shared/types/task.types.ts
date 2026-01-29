@@ -4,16 +4,11 @@ export const TASK_PRIORITIES = {
   HIGH: 'HIGH',
 } as const;
 
-export type TaskPriority =
-  (typeof TASK_PRIORITIES)[keyof typeof TASK_PRIORITIES];
-
 export const TASK_TYPES = {
   STANDARD: 'STANDARD',
   HIGH_VALUE: 'HIGH_VALUE',
   PREMIUM: 'PREMIUM',
 } as const;
-
-export type TaskType = (typeof TASK_TYPES)[keyof typeof TASK_TYPES];
 
 export const TASK_STATUSES = {
   NEW: 'NEW',
@@ -27,17 +22,12 @@ export const TASK_STATUSES = {
   CANCELLED: 'CANCELLED',
 } as const;
 
-export type TaskStatus = (typeof TASK_STATUSES)[keyof typeof TASK_STATUSES];
-
 export const SPRINT_STATUSES = {
   DRAFT: 'DRAFT',
   ACTIVE: 'ACTIVE',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
 } as const;
-
-export type SprintStatus =
-  (typeof SPRINT_STATUSES)[keyof typeof SPRINT_STATUSES];
 
 export interface TaskCategory {
   id: string;

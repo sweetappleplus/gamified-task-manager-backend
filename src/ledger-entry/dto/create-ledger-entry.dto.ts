@@ -1,12 +1,13 @@
 import {
-  IsIn,
+  IsDecimal,
+  IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
 } from 'class-validator';
-import { LEDGER_TYPES, type LedgerType } from '../../shared/types/index.js';
+import { LedgerType } from '../../generated/prisma/enums.js';
+import { Decimal } from '@prisma/client/runtime/client';
 
 export class CreateLedgerEntryDto {
   @IsNotEmpty()
@@ -14,17 +15,12 @@ export class CreateLedgerEntryDto {
   userId!: string;
 
   @IsNotEmpty()
-  @IsIn(Object.values(LEDGER_TYPES), {
-    message: `type must be one of: ${Object.values(LEDGER_TYPES).join(', ')}`,
-  })
+  @IsEnum(LedgerType)
   type!: LedgerType;
 
   @IsNotEmpty()
-  @IsNumber(
-    { allowNaN: false, allowInfinity: false },
-    { message: 'amount must be a valid number' },
-  )
-  amount!: number;
+  @IsDecimal()
+  amount!: Decimal;
 
   @IsOptional()
   @IsString()

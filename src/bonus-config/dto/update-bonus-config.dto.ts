@@ -1,18 +1,17 @@
 import {
-  IsNumber,
   IsOptional,
   IsString,
-  IsIn,
   MaxLength,
   IsPositive,
+  IsEnum,
+  IsDecimal,
 } from 'class-validator';
-import { TASK_TYPES, type TaskType } from '../../shared/types/index.js';
+import { TaskType } from '../../generated/prisma/enums.js';
+import { Decimal } from '@prisma/client/runtime/client';
 
 export class UpdateBonusConfigDto {
   @IsOptional()
-  @IsIn(Object.values(TASK_TYPES), {
-    message: `TaskType must be one of: ${Object.values(TASK_TYPES).join(', ')}`,
-  })
+  @IsEnum(TaskType)
   TaskType?: TaskType;
 
   @IsOptional()
@@ -25,10 +24,7 @@ export class UpdateBonusConfigDto {
   description?: string;
 
   @IsOptional()
-  @IsNumber(
-    { allowNaN: false, allowInfinity: false },
-    { message: 'bonusPercent must be a valid number' },
-  )
+  @IsDecimal()
   @IsPositive()
-  bonusPercent?: number;
+  bonusPercent?: Decimal;
 }

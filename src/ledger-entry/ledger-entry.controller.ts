@@ -11,14 +11,11 @@ import {
 } from '@nestjs/common';
 import { LedgerEntryService } from './ledger-entry.service.js';
 import { CreateLedgerEntryDto, LedgerEntryResponseDto } from './dto/index.js';
-import {
-  ApiResponse,
-  type CurrentUserData,
-  UserRole,
-  type LedgerType,
-} from '../shared/types/index.js';
+import { ApiResponse, type CurrentUserData } from '../shared/types/index.js';
+import { UserRole, LedgerType } from '../generated/prisma/enums.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 import { CurrentUser, Roles } from '../auth/decorators/index.js';
+import { Decimal } from '@prisma/client/runtime/client';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('ledger-entries')
@@ -47,7 +44,7 @@ export class LedgerEntryController {
   @HttpCode(HttpStatus.OK)
   async getBalanceForCurrentUser(
     @CurrentUser() user: CurrentUserData,
-  ): Promise<ApiResponse<{ balance: number }>> {
+  ): Promise<ApiResponse<{ balance: Decimal }>> {
     return this.ledgerEntryService.getBalanceForUser(user.userId);
   }
 
@@ -55,11 +52,11 @@ export class LedgerEntryController {
   @HttpCode(HttpStatus.OK)
   async getSummaryForCurrentUser(@CurrentUser() user: CurrentUserData): Promise<
     ApiResponse<{
-      totalEarnings: number;
-      totalWithdrawals: number;
-      totalBonuses: number;
-      totalAdjustments: number;
-      balance: number;
+      totalEarnings: Decimal;
+      totalWithdrawals: Decimal;
+      totalBonuses: Decimal;
+      totalAdjustments: Decimal;
+      balance: Decimal;
     }>
   > {
     return this.ledgerEntryService.getSummaryForUser(user.userId);

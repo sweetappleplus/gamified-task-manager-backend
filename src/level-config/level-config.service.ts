@@ -49,10 +49,7 @@ export class LevelConfigService {
       return {
         status: API_STATUSES.SUCCESS,
         message: 'Level config created successfully',
-        data: {
-          ...levelConfig,
-          earningMultiplier: Number(levelConfig.earningMultiplier),
-        },
+        data: levelConfig,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -74,10 +71,7 @@ export class LevelConfigService {
     return {
       status: API_STATUSES.SUCCESS,
       message: 'Level configs retrieved successfully',
-      data: levels.map((level) => ({
-        ...level,
-        earningMultiplier: Number(level.earningMultiplier),
-      })),
+      data: levels,
       timestamp: new Date().toISOString(),
     };
   }
@@ -96,10 +90,7 @@ export class LevelConfigService {
     return {
       status: API_STATUSES.SUCCESS,
       message: 'Level config retrieved successfully',
-      data: {
-        ...levelConfig,
-        earningMultiplier: Number(levelConfig.earningMultiplier),
-      },
+      data: levelConfig,
       timestamp: new Date().toISOString(),
     };
   }
@@ -145,10 +136,7 @@ export class LevelConfigService {
       return {
         status: API_STATUSES.SUCCESS,
         message: 'Level config updated successfully',
-        data: {
-          ...updated,
-          earningMultiplier: Number(updated.earningMultiplier),
-        },
+        data: updated,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {

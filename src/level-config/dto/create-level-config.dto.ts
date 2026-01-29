@@ -3,11 +3,12 @@ import {
   ArrayNotEmpty,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsPositive,
-  IsIn,
+  IsEnum,
+  IsDecimal,
 } from 'class-validator';
-import { TASK_TYPES, TaskType } from '../../shared/types/index.js';
+import { TaskType } from '../../generated/prisma/enums.js';
+import { Decimal } from '@prisma/client/runtime/client';
 
 export class CreateLevelConfigDto {
   @IsNotEmpty()
@@ -21,19 +22,12 @@ export class CreateLevelConfigDto {
   xpRequired!: number;
 
   @IsNotEmpty()
-  @IsNumber(
-    { allowNaN: false, allowInfinity: false },
-    { message: 'earningMultiplier must be a valid number' },
-  )
-  @IsPositive()
-  earningMultiplier!: number;
+  @IsDecimal()
+  earningMultiplier!: Decimal;
 
   @IsNotEmpty()
   @IsArray()
   @ArrayNotEmpty()
-  @IsIn(Object.values(TASK_TYPES), {
-    each: true,
-    message: `Each unlocked task type must be one of: ${Object.values(TASK_TYPES).join(', ')}`,
-  })
-  unlockedTaskTypes!: TaskType[];
+  @IsEnum(TaskType, { each: true })
+  unlockedTaskTypes!: Array<TaskType>;
 }

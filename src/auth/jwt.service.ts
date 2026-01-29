@@ -20,6 +20,7 @@ import {
   RefreshTokenResult,
   TokenPair,
 } from '../shared/types/index.js';
+import { UserRole } from '../generated/prisma/enums.js';
 
 if (!REFRESH_TOKEN_EXPIRY_DAYS) {
   log({
@@ -55,7 +56,7 @@ export class AuthJwtService {
   async generateAccessToken(
     userId: string,
     email: string,
-    role: string,
+    role: UserRole,
   ): Promise<string> {
     const payload: JwtPayload = {
       id: userId,
@@ -105,7 +106,7 @@ export class AuthJwtService {
   async generateTokenPair(
     userId: string,
     email: string,
-    role: string,
+    role: UserRole,
     deviceInfo?: string,
     ipAddress?: string,
   ): Promise<TokenPair> {

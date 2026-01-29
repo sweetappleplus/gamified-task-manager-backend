@@ -12,13 +12,10 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from './notification.service.js';
 import { CreateNotificationDto, NotificationResponseDto } from './dto/index.js';
-import {
-  ApiResponse,
-  type CurrentUserData,
-  UserRole,
-} from '../shared/types/index.js';
+import { ApiResponse, type CurrentUserData } from '../shared/types/index.js';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards/index.js';
 import { CurrentUser, Roles } from '../auth/decorators/index.js';
+import { UserRole } from '../generated/prisma/enums.js';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('notifications')
