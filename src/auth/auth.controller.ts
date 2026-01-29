@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 import {
@@ -13,11 +14,15 @@ import {
   RefreshTokenDto,
   AuthResponseDto,
 } from './dto/index.js';
-import { Public } from './decorators/index.js';
+import { Public, Roles, CurrentUser } from './decorators/index.js';
+import { JwtAuthGuard, RolesGuard } from './guards/index.js';
 import { ApiResponse } from '../shared/types/index.js';
 import { API_STATUSES } from '../shared/consts/index.js';
+import { UserRole } from '../generated/prisma/enums.js';
+import type { CurrentUserData } from '../shared/types/user.types.js';
 
 @Controller('auth')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -72,5 +77,28 @@ export class AuthController {
     @Body() refreshTokenDto: RefreshTokenDto,
   ): Promise<ApiResponse<void>> {
     return this.authService.logout(refreshTokenDto.refreshToken);
+  }
+
+  @Roles(UserRole.SUPER_ADMIN)
+  @Post('impersonate')
+  @HttpCode(HttpStatus.OK)
+  async impersonate(
+    @Body('userId') userId: string,
+    @CurrentUser() admin: CurrentUserData,
+    @Headers('user-agent') userAgent?: string,
+    @Headers('x-forwarded-for') ipAddress?: string,
+  ): Promise<ApiResponse<AuthResponseDto>> {
+    const authResponse = await this.authService.impersonate(
+      admin.userId,
+      userId,
+      userAgent,
+      ipAddress,
+    );
+    return {
+      status: API_STATUSES.SUCCESS,
+      message: 'Impersonation successful',
+      data: authResponse,
+      timestamp: new Date().toISOString(),
+    };
   }
 }

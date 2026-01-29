@@ -7,6 +7,7 @@ import { OtpService } from './otp.service.js';
 import { AuthJwtService } from './jwt.service.js';
 import { JwtStrategy } from './strategies/jwt.strategy.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { EmailModule } from '../email/email.module.js';
 import {
   JWT_SECRET,
   LOG_LEVELS,
@@ -44,6 +45,7 @@ if (!JWT_EXPIRATION_TIME_MINUTES) {
       secret: JWT_SECRET,
       signOptions: { expiresIn: `${Number(JWT_EXPIRATION_TIME_MINUTES)}m` },
     }),
+    EmailModule,
   ],
   controllers: [AuthController],
   providers: [
