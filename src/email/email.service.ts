@@ -1,8 +1,95 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { Transporter } from 'nodemailer';
 import { log } from '../shared/utils/index.js';
 import { LOG_LEVELS } from '../shared/consts/index.js';
+import {
+  SMTP_HOST,
+  SMTP_PORT,
+  SMTP_USER,
+  SMTP_PASS,
+  SMTP_FROM,
+  FRONTEND_URL,
+  OTP_EXPIRATION_TIME_MINUTES,
+} from '../shared/consts/index.js';
+
+if (!SMTP_HOST) {
+  log({
+    message: 'SMTP_HOST is not set in the environment variables',
+    level: LOG_LEVELS.CRITICAL,
+  });
+  throw new HttpException(
+    'SMTP_HOST is not set in the environment variables',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
+}
+
+if (!SMTP_PORT) {
+  log({
+    message: 'SMTP_PORT is not set in the environment variables',
+    level: LOG_LEVELS.CRITICAL,
+  });
+  throw new HttpException(
+    'SMTP_PORT is not set in the environment variables',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
+}
+
+if (!SMTP_USER) {
+  log({
+    message: 'SMTP_USER is not set in the environment variables',
+    level: LOG_LEVELS.CRITICAL,
+  });
+  throw new HttpException(
+    'SMTP_USER is not set in the environment variables',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
+}
+
+if (!SMTP_PASS) {
+  log({
+    message: 'SMTP_PASS is not set in the environment variables',
+    level: LOG_LEVELS.CRITICAL,
+  });
+  throw new HttpException(
+    'SMTP_PASS is not set in the environment variables',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
+}
+
+if (!SMTP_FROM) {
+  log({
+    message: 'SMTP_FROM is not set in the environment variables',
+    level: LOG_LEVELS.CRITICAL,
+  });
+  throw new HttpException(
+    'SMTP_FROM is not set in the environment variables',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
+}
+
+if (!FRONTEND_URL) {
+  log({
+    message: 'FRONTEND_URL is not set in the environment variables',
+    level: LOG_LEVELS.CRITICAL,
+  });
+  throw new HttpException(
+    'FRONTEND_URL is not set in the environment variables',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
+}
+
+if (!OTP_EXPIRATION_TIME_MINUTES) {
+  log({
+    message:
+      'OTP_EXPIRATION_TIME_MINUTES is not set in the environment variables',
+    level: LOG_LEVELS.CRITICAL,
+  });
+  throw new HttpException(
+    'OTP_EXPIRATION_TIME_MINUTES is not set in the environment variables',
+    HttpStatus.INTERNAL_SERVER_ERROR,
+  );
+}
 
 export interface EmailOptions {
   to: string;
@@ -17,12 +104,12 @@ export class EmailService {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
+      host: SMTP_HOST,
+      port: Number(SMTP_PORT),
       secure: false, // true for 465, false for other ports
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: SMTP_USER,
+        pass: SMTP_PASS,
       },
     });
 
@@ -46,7 +133,7 @@ export class EmailService {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const info = await this.transporter.sendMail({
-        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        from: SMTP_FROM,
         to: options.to,
         subject: options.subject,
         text: options.text || '',
@@ -105,7 +192,7 @@ export class EmailService {
               <h2>${taskTitle}</h2>
               ${deadlineText}
               <p>Please log in to your dashboard to view task details and start working on it.</p>
-              <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/tasks/${taskId}" class="button">View Task</a>
+              <a href="${FRONTEND_URL}/tasks/${taskId}" class="button">View Task</a>
             </div>
             <div class="footer">
               <p>This is an automated message from Gamified Task Manager. Please do not reply to this email.</p>
@@ -254,7 +341,7 @@ export class EmailService {
               <h2>${taskTitle}</h2>
               <p><strong>Submitted by:</strong> ${workerName}</p>
               <p>Please review the submission and provide feedback.</p>
-              <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/tasks/${taskId}" class="button">Review Task</a>
+              <a href="${FRONTEND_URL}/tasks/${taskId}" class="button">Review Task</a>
             </div>
             <div class="footer">
               <p>This is an automated message from Gamified Task Manager. Please do not reply to this email.</p>
@@ -393,7 +480,7 @@ export class EmailService {
               <p>Hello,</p>
               <p>Use the following code to log in to your account:</p>
               <div class="otp">${otp}</div>
-              <p>This code will expire in ${process.env.OTP_EXPIRATION_TIME_MINUTES || '10'} minutes.</p>
+              <p>This code will expire in ${OTP_EXPIRATION_TIME_MINUTES} minutes.</p>
               <p class="warning"><strong>⚠️ Important:</strong> Do not share this code with anyone. Our team will never ask you for this code.</p>
             </div>
             <div class="footer">
@@ -408,7 +495,7 @@ export class EmailService {
       to: recipientEmail,
       subject: 'Your Login Code',
       html,
-      text: `Your login code is: ${otp}\n\nThis code will expire in ${process.env.OTP_EXPIRATION_TIME_MINUTES || '10'} minutes.`,
+      text: `Your login code is: ${otp}\n\nThis code will expire in ${OTP_EXPIRATION_TIME_MINUTES} minutes.`,
     });
   }
 
@@ -445,7 +532,7 @@ export class EmailService {
                 <li>🏆 Unlock higher-value tasks as you progress</li>
               </ul>
               <p>Log in to your dashboard to get started!</p>
-              <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/login" class="button">Go to Dashboard</a>
+              <a href="${FRONTEND_URL}/login" class="button">Go to Dashboard</a>
             </div>
             <div class="footer">
               <p>This is an automated message from Gamified Task Manager. Please do not reply to this email.</p>
