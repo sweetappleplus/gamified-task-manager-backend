@@ -17,7 +17,14 @@ export class NotificationResponseDto implements Notification {
 
   @ApiProperty({
     description: 'Notification type',
-    enum: ['TASK_ASSIGNED', 'TASK_APPROVED', 'TASK_REJECTED', 'LEVEL_UP', 'ACHIEVEMENT', 'SYSTEM'],
+    enum: [
+      'TASK_ASSIGNED',
+      'TASK_APPROVED',
+      'TASK_REJECTED',
+      'LEVEL_UP',
+      'ACHIEVEMENT',
+      'SYSTEM',
+    ],
     example: 'TASK_ASSIGNED',
   })
   type!: NotificationType;

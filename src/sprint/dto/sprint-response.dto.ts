@@ -40,7 +40,10 @@ class TaskInfo {
 }
 
 class SprintTask {
-  @ApiProperty({ description: 'Sprint task ID', example: 'clxyz1234abcd5678efgh9012' })
+  @ApiProperty({
+    description: 'Sprint task ID',
+    example: 'clxyz1234abcd5678efgh9012',
+  })
   id!: string;
 
   @ApiProperty({ description: 'Task order in sprint', example: 1 })
@@ -66,7 +69,10 @@ class UserInfo {
 }
 
 class SprintUserProgress {
-  @ApiProperty({ description: 'Progress ID', example: 'clxyz1234abcd5678efgh9012' })
+  @ApiProperty({
+    description: 'Progress ID',
+    example: 'clxyz1234abcd5678efgh9012',
+  })
   id!: string;
 
   @ApiProperty({ description: 'User ID', example: 'clxyz1234abcd5678efgh9012' })

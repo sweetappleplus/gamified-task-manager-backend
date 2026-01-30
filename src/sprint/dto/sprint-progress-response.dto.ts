@@ -1,7 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 class SprintInfo {
-  @ApiProperty({ description: 'Sprint ID', example: 'clxyz1234abcd5678efgh9012' })
+  @ApiProperty({
+    description: 'Sprint ID',
+    example: 'clxyz1234abcd5678efgh9012',
+  })
   id!: string;
 
   @ApiProperty({ description: 'Sprint name', example: 'January Sprint 2024' })
