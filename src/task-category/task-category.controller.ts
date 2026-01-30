@@ -33,7 +33,10 @@ import { UserRole } from '../generated/prisma/enums.js';
 export class TaskCategoryController {
   constructor(private readonly taskCategoryService: TaskCategoryService) {}
 
-  @ApiOperation({ summary: 'Create task category (Super Admin only)', description: 'Creates a new task category' })
+  @ApiOperation({
+    summary: 'Create task category (Super Admin only)',
+    description: 'Creates a new task category',
+  })
   @ApiBearerAuth('JWT-auth')
   @ApiResponseDoc({ status: 201, description: 'Category created successfully' })
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -46,8 +49,14 @@ export class TaskCategoryController {
     return this.taskCategoryService.create(createTaskCategoryDto);
   }
 
-  @ApiOperation({ summary: 'Get all task categories', description: 'Retrieves all task categories (public endpoint)' })
-  @ApiResponseDoc({ status: 200, description: 'Categories retrieved successfully' })
+  @ApiOperation({
+    summary: 'Get all task categories',
+    description: 'Retrieves all task categories (public endpoint)',
+  })
+  @ApiResponseDoc({
+    status: 200,
+    description: 'Categories retrieved successfully',
+  })
   @Public()
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -55,9 +64,15 @@ export class TaskCategoryController {
     return this.taskCategoryService.findAll();
   }
 
-  @ApiOperation({ summary: 'Get task category by ID', description: 'Retrieves a specific category (public endpoint)' })
+  @ApiOperation({
+    summary: 'Get task category by ID',
+    description: 'Retrieves a specific category (public endpoint)',
+  })
   @ApiParam({ name: 'id', description: 'Category ID' })
-  @ApiResponseDoc({ status: 200, description: 'Category retrieved successfully' })
+  @ApiResponseDoc({
+    status: 200,
+    description: 'Category retrieved successfully',
+  })
   @ApiResponseDoc({ status: 404, description: 'Category not found' })
   @Public()
   @Get(':id')
@@ -68,7 +83,10 @@ export class TaskCategoryController {
     return this.taskCategoryService.findOne(id);
   }
 
-  @ApiOperation({ summary: 'Update task category (Super Admin only)', description: 'Updates category details' })
+  @ApiOperation({
+    summary: 'Update task category (Super Admin only)',
+    description: 'Updates category details',
+  })
   @ApiBearerAuth('JWT-auth')
   @ApiParam({ name: 'id', description: 'Category ID' })
   @ApiResponseDoc({ status: 200, description: 'Category updated successfully' })
@@ -83,7 +101,10 @@ export class TaskCategoryController {
     return this.taskCategoryService.update(id, updateTaskCategoryDto);
   }
 
-  @ApiOperation({ summary: 'Delete task category (Super Admin only)', description: 'Deletes a category' })
+  @ApiOperation({
+    summary: 'Delete task category (Super Admin only)',
+    description: 'Deletes a category',
+  })
   @ApiBearerAuth('JWT-auth')
   @ApiParam({ name: 'id', description: 'Category ID' })
   @ApiResponseDoc({ status: 200, description: 'Category deleted successfully' })
