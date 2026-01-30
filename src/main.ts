@@ -41,33 +41,9 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Gamified Task Manager API')
     .setDescription(
-      `
-      Comprehensive API documentation for the Gamified Task Manager system.
-
-      ## Features
-      - **Authentication**: OTP-based passwordless authentication with JWT tokens
-      - **Task Management**: Full CRUD operations with status workflow tracking
-      - **Gamification**: XP levels, bonuses, and earning multipliers
-      - **Role-Based Access**: SUPER_ADMIN and WORKER roles with different permissions
-      - **Payment System**: Track task payments and manage worker earnings
-      - **Notifications**: Real-time notifications for task updates and system events
-      - **Bulk Operations**: Mass task creation and assignment capabilities
-
-      ## Task Workflow
-      NEW → PENDING → IN_ACTION → IN_REVIEW → COMPLETED → PAID
-
-      ## Authentication
-      All protected endpoints require a valid JWT token in the Authorization header.
-      Use the /auth/verify-otp endpoint to obtain your access token.
-      `,
+      'Comprehensive REST API for a gamified task management system with rewards, levels, and sprint tracking',
     )
     .setVersion('1.0')
-    .setContact(
-      'Backend Team',
-      'https://github.com/yourusername/gamified-task-manager',
-      'support@gamified-task-manager.com',
-    )
-    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
     .addBearerAuth(
       {
         type: 'http',
@@ -82,13 +58,23 @@ async function bootstrap() {
     .addTag('Authentication', 'OTP-based authentication and token management')
     .addTag(
       'Tasks',
-      'Task CRUD operations, assignment, and workflow management',
+      'Task CRUD operations, assignment, submission, and workflow management',
     )
-    .addTag('Users', 'User management and profile operations')
-    .addTag('Categories', 'Task category management')
-    .addTag('Sprints', 'Sprint planning and tracking')
-    .addTag('Notifications', 'User notification management')
-    .addTag('Ledger', 'Financial transactions and earning records')
+    .addTag('Users', 'User management, profile operations, and avatar uploads')
+    .addTag('Categories', 'Task category management and organization')
+    .addTag('Sprints', 'Sprint planning, tracking, and progress monitoring')
+    .addTag('Notifications', 'User notification management and delivery')
+    .addTag('Ledger', 'Financial transactions, earnings, and payment records')
+    .addTag(
+      'Payment Methods',
+      'User payment method configuration and management',
+    )
+    .addTag(
+      'Bonus Configuration',
+      'Task bonus configuration and reward multipliers',
+    )
+    .addTag('Level Configuration', 'User level progression and XP requirements')
+    .addTag('System Settings', 'Application-wide system configuration')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
