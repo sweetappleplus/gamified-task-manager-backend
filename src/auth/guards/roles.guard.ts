@@ -6,14 +6,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { CurrentUserData } from '../../shared/types/index.js';
 import { LOG_LEVELS, ROLES_KEY } from '../../shared/consts/index.js';
 import { log } from '../../shared/utils/index.js';
 import { UserRole } from '../../generated/prisma/enums.js';
-
-interface RequestWithUser extends Request {
-  user?: CurrentUserData;
-}
+import { RequestWithUserGuard } from '../../shared/types/user.types.js';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -29,7 +25,7 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest<RequestWithUser>();
+    const request = context.switchToHttp().getRequest<RequestWithUserGuard>();
     const user = request.user;
 
     if (!user) {

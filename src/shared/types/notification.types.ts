@@ -11,3 +11,10 @@ export interface Notification {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface EmailOptions {
+  to: string;
+  subject: string;
+  html: string;
+  text?: string;
+}

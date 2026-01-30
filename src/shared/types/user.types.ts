@@ -5,3 +5,11 @@ export interface CurrentUserData {
   email: string;
   role: UserRole;
 }
+
+export interface RequestWithUserDecorator extends Request {
+  user: CurrentUserData;
+}
+
+export interface RequestWithUserGuard extends Request {
+  user?: CurrentUserData;
+}

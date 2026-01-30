@@ -1,13 +1,12 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { CurrentUserData } from '../../shared/types/index.js';
-
-interface RequestWithUser extends Request {
-  user: CurrentUserData;
-}
+import {
+  CurrentUserData,
+  RequestWithUserDecorator,
+} from '../../shared/types/index.js';
 
 export const CurrentUser = createParamDecorator(
   (_, ctx: ExecutionContext): CurrentUserData => {
-    const request = ctx.switchToHttp().getRequest<RequestWithUser>();
+    const request = ctx.switchToHttp().getRequest<RequestWithUserDecorator>();
     return request.user;
   },
 );

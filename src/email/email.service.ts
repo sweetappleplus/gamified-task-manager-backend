@@ -12,6 +12,7 @@ import {
   FRONTEND_URL,
   OTP_EXPIRATION_TIME_MINUTES,
 } from '../shared/consts/index.js';
+import { EmailOptions } from '../shared/types/index.js';
 
 if (!SMTP_HOST) {
   log({
@@ -89,13 +90,6 @@ if (!OTP_EXPIRATION_TIME_MINUTES) {
     'OTP_EXPIRATION_TIME_MINUTES is not set in the environment variables',
     HttpStatus.INTERNAL_SERVER_ERROR,
   );
-}
-
-export interface EmailOptions {
-  to: string;
-  subject: string;
-  html: string;
-  text?: string;
 }
 
 @Injectable()
