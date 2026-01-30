@@ -13,6 +13,15 @@ import {
   BadRequestException,
   HttpException,
 } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse as ApiResponseDoc,
+  ApiBearerAuth,
+  ApiParam,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -41,10 +50,18 @@ if (!AVATAR_MAX_SIZE_MB) {
   );
 }
 
+@ApiTags('Users')
+@ApiBearerAuth('JWT-auth')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiOperation({
+    summary: 'Get all users (Super Admin only)',
+    description:
+      'Retrieves a list of all users with optional filtering by role and active status',
+  })
+  @ApiResponseDoc({ status: 200, description: 'Users retrieved successfully' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
   @Get()
@@ -55,6 +72,14 @@ export class UserController {
     return this.userService.findAll(query);
   }
 
+  @ApiOperation({
+    summary: 'Get current user profile',
+    description: "Retrieves the authenticated user's profile information",
+  })
+  @ApiResponseDoc({
+    status: 200,
+    description: 'Profile retrieved successfully',
+  })
   @UseGuards(JwtAuthGuard)
   @Get('me')
   @HttpCode(HttpStatus.OK)
@@ -64,6 +89,17 @@ export class UserController {
     return this.userService.findOne(user.userId);
   }
 
+  @ApiOperation({
+    summary: 'Get user by ID (Super Admin only)',
+    description: 'Retrieves detailed information about a specific user',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'User ID',
+    example: 'clxyz123456789abcdef',
+  })
+  @ApiResponseDoc({ status: 200, description: 'User retrieved successfully' })
+  @ApiResponseDoc({ status: 404, description: 'User not found' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
   @Get(':id')
@@ -74,6 +110,13 @@ export class UserController {
     return this.userService.findOne(id);
   }
 
+  @ApiOperation({
+    summary: 'Update user profile (Worker only)',
+    description:
+      "Updates the authenticated worker's profile information (name, payment methods, etc.)",
+  })
+  @ApiResponseDoc({ status: 200, description: 'Profile updated successfully' })
+  @ApiResponseDoc({ status: 400, description: 'Invalid data' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.WORKER)
   @Patch('profile')
@@ -85,6 +128,26 @@ export class UserController {
     return this.userService.updateProfile(user.userId, updateUserProfileDto);
   }
 
+  @ApiOperation({
+    summary: 'Upload user avatar (Worker only)',
+    description:
+      'Uploads a profile picture for the authenticated worker. Supported formats: JPG, JPEG, PNG, GIF, WEBP. Maximum file size configured in environment.',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        avatar: {
+          type: 'string',
+          format: 'binary',
+          description: 'Avatar image file',
+        },
+      },
+    },
+  })
+  @ApiResponseDoc({ status: 200, description: 'Avatar uploaded successfully' })
+  @ApiResponseDoc({ status: 400, description: 'Invalid file type or size' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.WORKER)
   @Patch('avatar')
@@ -126,6 +189,21 @@ export class UserController {
     return this.userService.uploadAvatar(user.userId, avatarUrl);
   }
 
+  @ApiOperation({
+    summary: 'Change user status (Super Admin only)',
+    description:
+      'Activate or deactivate a user account. Deactivated users cannot log in.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'User ID',
+    example: 'clxyz123456789abcdef',
+  })
+  @ApiResponseDoc({
+    status: 200,
+    description: 'User status updated successfully',
+  })
+  @ApiResponseDoc({ status: 404, description: 'User not found' })
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.SUPER_ADMIN)
   @Patch(':id/status')
