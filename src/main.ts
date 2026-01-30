@@ -80,7 +80,10 @@ async function bootstrap() {
       'JWT-auth',
     )
     .addTag('Authentication', 'OTP-based authentication and token management')
-    .addTag('Tasks', 'Task CRUD operations, assignment, and workflow management')
+    .addTag(
+      'Tasks',
+      'Task CRUD operations, assignment, and workflow management',
+    )
     .addTag('Users', 'User management and profile operations')
     .addTag('Categories', 'Task category management')
     .addTag('Sprints', 'Sprint planning and tracking')

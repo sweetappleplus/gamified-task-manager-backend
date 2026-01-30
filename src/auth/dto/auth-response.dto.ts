@@ -32,14 +32,18 @@ class UserInfo {
 
 export class AuthResponseDto {
   @ApiProperty({
-    description: 'JWT access token for API authentication (expires in 15 minutes)',
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ...',
+    description:
+      'JWT access token for API authentication (expires in 15 minutes)',
+    example:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ...',
   })
   accessToken!: string;
 
   @ApiProperty({
-    description: 'JWT refresh token for obtaining new access tokens (expires in 7 days)',
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ...',
+    description:
+      'JWT refresh token for obtaining new access tokens (expires in 7 days)',
+    example:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ...',
   })
   refreshToken!: string;
 
