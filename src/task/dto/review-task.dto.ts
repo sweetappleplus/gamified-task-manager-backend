@@ -19,7 +19,8 @@ export class ReviewTaskDto {
   feedback?: string;
 
   @ApiPropertyOptional({
-    description: 'If true and rejected, task returns to IN_ACTION status instead of FAILED',
+    description:
+      'If true and rejected, task returns to IN_ACTION status instead of FAILED',
     example: false,
     default: false,
   })

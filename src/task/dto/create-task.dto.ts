@@ -26,15 +26,18 @@ export class CreateTaskDto {
 
   @ApiProperty({
     description: 'Detailed task description explaining what needs to be done',
-    example: 'Create a modern landing page design for our new product launch. Include hero section, features, testimonials, and CTA.',
+    example:
+      'Create a modern landing page design for our new product launch. Include hero section, features, testimonials, and CTA.',
   })
   @IsNotEmpty()
   @IsString()
   description!: string;
 
   @ApiPropertyOptional({
-    description: 'Step-by-step instructions or checklist for completing the task',
-    example: '1. Research competitor landing pages\n2. Create wireframe\n3. Design mockup in Figma\n4. Get feedback and iterate',
+    description:
+      'Step-by-step instructions or checklist for completing the task',
+    example:
+      '1. Research competitor landing pages\n2. Create wireframe\n3. Design mockup in Figma\n4. Get feedback and iterate',
   })
   @IsOptional()
   @IsString()
@@ -99,7 +102,8 @@ export class CreateTaskDto {
   deadline?: string;
 
   @ApiPropertyOptional({
-    description: 'Maximum allowed delay in submission after deadline (in minutes)',
+    description:
+      'Maximum allowed delay in submission after deadline (in minutes)',
     example: 60,
     minimum: 0,
   })

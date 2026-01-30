@@ -14,7 +14,8 @@ export class BulkAssignTasksDto {
   taskIds!: string[];
 
   @ApiProperty({
-    description: 'Array of worker IDs to assign tasks to (tasks distributed round-robin)',
+    description:
+      'Array of worker IDs to assign tasks to (tasks distributed round-robin)',
     example: ['clxyz111222333444555', 'clxyz666777888999000'],
     type: [String],
     minItems: 1,

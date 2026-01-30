@@ -183,7 +183,8 @@ export class TaskController {
   })
   @ApiResponseDoc({
     status: 400,
-    description: 'Task cannot be started (invalid status or not assigned to you)',
+    description:
+      'Task cannot be started (invalid status or not assigned to you)',
   })
   @ApiResponseDoc({
     status: 404,
@@ -215,7 +216,8 @@ export class TaskController {
   })
   @ApiResponseDoc({
     status: 400,
-    description: 'Task cannot be submitted (invalid status or not assigned to you)',
+    description:
+      'Task cannot be submitted (invalid status or not assigned to you)',
   })
   @ApiResponseDoc({
     status: 404,
